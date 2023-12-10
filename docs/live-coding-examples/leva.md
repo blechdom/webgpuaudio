@@ -1,5 +1,5 @@
 ---
-title: WebGPU Audio Live Coding Example
+title: WebGPU Audio Live Code
 ---
 
 ```jsx live
