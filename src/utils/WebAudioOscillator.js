@@ -3,8 +3,6 @@ export default class WebAudioOscillator {
     this.audioContext = new AudioContext();
     this.oscillator = this.audioContext.createOscillator();
     this.gain = this.audioContext.createGain();
-    //this.oscillator.type = "sine";
-    //this.oscillator.frequency.setValueAtTime(222, this.audioContext.currentTime);
     this.oscillator.connect(this.gain);
     this.gain.gain.value = 0;
     this.gain.connect(this.audioContext.destination);
@@ -12,11 +10,11 @@ export default class WebAudioOscillator {
   }
 
   setVolume(volume) {
-    this.gain.gain.value = volume;
+    this.gain.gain.setTargetAtTime(volume, this.audioContext.currentTime, 0.01);
   }
 
   setFrequency(frequency) {
-    this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+    this.oscillator.frequency.setTargetAtTime(frequency, this.audioContext.currentTime, 0.01);
   }
 
   setWaveForm(waveForm) {
@@ -24,13 +22,13 @@ export default class WebAudioOscillator {
   }
 
   stop() {
-    this.oscillator.stop();
-  }
-
-  close() {
-    this.oscillator.disconnect();
-    this.gain.disconnect();
-    if (this.audioContext) this.audioContext.close();
-    if (this.audioContext) this.audioContext = undefined;
+    this.gain.gain.setTargetAtTime(0.0, this.audioContext.currentTime, 0.01);
+    setTimeout(() => {
+      this.oscillator.stop();
+      this.oscillator.disconnect();
+      this.gain.disconnect();
+      if (this.audioContext) this.audioContext.close();
+      if (this.audioContext) this.audioContext = undefined;
+    }, 100);
   }
 }
