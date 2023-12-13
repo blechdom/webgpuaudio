@@ -5,6 +5,8 @@
     "baseUrl": "."
   },
   "typeRoots": [
-    "node_modules/@webgpu/types"
+    "node_modules/@webgpu/types",
+    "src/types/mdx.d.ts",
+    "src/types/global.d.ts"
   ]
 }

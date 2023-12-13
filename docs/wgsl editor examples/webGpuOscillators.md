@@ -20,9 +20,9 @@ function WebGpuOscillators() {
 
   const compute = `
     override WORKGROUP_SIZE: u32 = 256;
-    override SAMPLING_RATE: f32 = 44100.0;
+    override SAMPLE_RATE: f32 = 48000.0;
     const PI2: f32 = 6.283185307179586476925286766559;
-    
+ 
     struct TimeInfo {
         offset: f32,
     }
@@ -33,40 +33,48 @@ function WebGpuOscillators() {
       waveForm: f32
     }
     
+    var<private> last_frequency: f32 = 200;
+    
     @binding(0) @group(0) var<uniform> time_info: TimeInfo;
-    @binding(1) @group(0) var<storage, read_write> sound_chunk: array<vec2<f32>>; // 2 channel pcm data
+    @binding(1) @group(0) var<storage, read_write> sound_chunk: array<vec2<f32>>;
     @binding(2) @group(0) var<storage, read> audio_param: AudioParam;
     
     @compute
     @workgroup_size(WORKGROUP_SIZE)
     fn synthesize(@builtin(global_invocation_id) global_id: vec3<u32>) {
-        let sampleVec = global_id.x;
+        var sampleCount: u32 = global_id.x; // 0 -> keeps on counting and counting and counting
     
-        if (sampleVec >= arrayLength(&sound_chunk)) {
+        if (sampleCount >= arrayLength(&sound_chunk)) {
             return;
         }
     
-        let t = f32(sampleVec) / SAMPLING_RATE;
-    
-        sound_chunk[sampleVec] = oscillator(time_info.offset + t, audio_param);
+        var t = f32(sampleCount) / SAMPLE_RATE;
+        
+        var chunkPosition = f32(sampleCount % (arrayLength(&sound_chunk)/2))/SAMPLE_RATE; 
+        
+        var next_frequency = audio_param.frequency * chunkPosition;
+     
+        sound_chunk[sampleCount] = oscillator(time_info.offset + t, next_frequency, audio_param.gain, audio_param.waveForm);
     }
     
-    fn oscillator(time: f32, audio_param: AudioParam) -> vec2<f32> {
-        var v: f32 = sin(time * audio_param.frequency * PI2);
-        if (audio_param.waveForm == 1) {
-           // v = -(abs((time * audio_param.frequency%1.)-.5)-.25)*4.;
-        } else if (audio_param.waveForm == 2) {
-            v = step(fract(time * audio_param.frequency),0.5)*2.0-1.0;
-        } else if (audio_param.waveForm == 3) {
-            v = 1.0 - 2.0*fract(time * audio_param.frequency);
-        }
-        return vec2(v * audio_param.gain);
+    fn oscillator(time: f32, frequency: f32, gain: f32, waveForm: f32) -> vec2<f32> {
+    
+        
+        var v: f32 = sin(time * frequency * PI2);
+       /* if (waveForm == 1) {
+           v = -abs(fract(time * frequency)-.5)*4.0-1.0;
+        } else if (waveForm == 2) {
+            v = step(fract(time * frequency),0.5)*2.0-1.0;
+        } else if (waveForm == 3) {
+            v = 1.0 - 2.0*fract(time * frequency);
+        }*/
+        return vec2(v * gain);
     }
 `;
   const waveForms = ["sine", "triangle", "square", "sawtooth"];
   const numChannels = 2;
-  const workgroupSize = 256;
-  const chunkDurationInSeconds = .01;
+  const workgroupSize = 16;
+  const chunkDurationInSeconds = .1;
   const maxBufferedChunks = 2;
   const [audioContext, setAudioContext] = useState<AudioContext | undefined>(undefined);
   const [playing, setPlaying] = useState(false);
@@ -138,6 +146,7 @@ function WebGpuOscillators() {
       }
     }
     if(audioContext) {
+      console.log("sample rate: ", audioContext.sampleRate);
       startMakingSound();
     }
   }, [audioContext]);
@@ -223,7 +232,7 @@ function WebGpuOscillators() {
 
 
   return (
-    <Leva fill flat oneLineLabels/>
+    <Leva flat oneLineLabels/>
   )
 }
 ```

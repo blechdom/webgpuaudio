@@ -7,7 +7,6 @@ export default class WebGpuAudioEngine {
   public timeInfoBuffer: GPUBuffer;
   public chunkBuffer: GPUBuffer;
   public chunkMapBuffer: GPUBuffer;
-  public audioParamBuffer: GPUBuffer;
   public pipeline: GPUComputePipeline;
   public bindGroup: GPUBindGroup;
   public audioShaderModule: GPUShaderModule;
@@ -39,10 +38,6 @@ export default class WebGpuAudioEngine {
       size: this.chunkBufferSize,
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
-    this.audioParamBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT * audioParamsLength,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-    });
 
     this.audioShaderModule = device.createShaderModule({code: compute});
     this.pipeline = device.createComputePipeline({
@@ -62,7 +57,6 @@ export default class WebGpuAudioEngine {
       entries: [
         {binding: 0, resource: {buffer: this.timeInfoBuffer}},
         {binding: 1, resource: {buffer: this.chunkBuffer}},
-        {binding: 2, resource: {buffer: this.audioParamBuffer}},
       ]
     });
   }

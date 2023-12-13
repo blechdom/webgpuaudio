@@ -3,7 +3,6 @@ import { Leva, useControls, button } from 'leva'
 import WebAudioOscillator from '../../utils/WebAudioOscillator';
 import WebGpuAudioEngine from '../../utils/WebGpuAudioEngine';
 import useDevice from "../../hooks/useDevice";
-import "./react-dat-gui.css";
 
 const ReactLiveScope = {
   React,
