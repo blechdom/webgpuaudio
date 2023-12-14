@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebgpuaudio=self.webpackChunkwebgpuaudio||[]).push([[950],{3386:(e,d,u)=>{u.r(d),u.d(d,{default:()=>n});u(7294);var c=u(6386),i=u(5893);function n(){return(0,i.jsxs)(c.Z,{children:[(0,i.jsx)("h1",{children:"Live Coding"}),(0,i.jsx)("p",{children:"add code block here"})]})}}}]);
