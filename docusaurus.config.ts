@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'WebGPU Audio',
-  tagline: 'Exploring Audio Possibilities of WebGPU',
+  tagline: 'Exploring Audio with WebGPU',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -17,6 +17,8 @@ const config: Config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'blechdom', // Usually your GitHub org/user name.
   projectName: 'webgpuaudio', // Usually your repo name.
+  deploymentBranch: 'main', // Deployment branch.
+  trailingSlash: false,
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -35,15 +37,8 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/blechdom/webgpuaudio',
         },
         blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/blechdom/webgpuaudio',
         },
         theme: {
           customCss: './src/css/custom.css',
