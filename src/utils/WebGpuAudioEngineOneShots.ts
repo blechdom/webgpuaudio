@@ -1,6 +1,4 @@
 const NUM_CHANNELS = 2;
-const MAX_BUFFERED_CHUNKS = 2;
-
 
 export default class WebGpuAudioEngine {
   public audioContext: AudioContext | undefined;
@@ -17,9 +15,6 @@ export default class WebGpuAudioEngine {
   public bindGroup: GPUBindGroup;
   public audioShaderModule: GPUShaderModule;
   public sampleRate: number;
-  public timeoutId: NodeJS.Timeout | null = null;
-  private startTime: number | undefined;
-  private nextChunkOffset: number = 0.0;
   private workgroupSize: number = 0;
 
   constructor(chunkDurationInSeconds: number) {
@@ -73,31 +68,22 @@ export default class WebGpuAudioEngine {
     });
   }
 
-  public playSound() {
+  public playSound(freq: number,
+                   volume: number,
+                   soundType: number) {
+    console.log("playSound with sound type ", soundType);
     (async () => {
-      await this.createSoundChunk();
+      await this.createSoundChunk(freq, volume, soundType);
     })();
   }
 
-  public async createSoundChunk() {
+  public async createSoundChunk(freq, volume, soundType) {
     if (!this.audioContext) return;
-    if (this.startTime === undefined) {
-      this.startTime = performance.now() / 1000.0;
-    }
-    console.log("this.nextChunkOffset", this.nextChunkOffset);
-    const bufferedSeconds = (this.startTime + this.nextChunkOffset) - (performance.now() / 1000.0);
-    const numBufferedChunks = Math.floor(bufferedSeconds / this.chunkDurationInSeconds);
-
-    if (numBufferedChunks > MAX_BUFFERED_CHUNKS) {
-      const timeout = this.chunkDurationInSeconds;
-     // this.timeoutId = setTimeout(await this.createSoundChunk.bind(this), timeout * 1000.0);
-      return;
-    }
-
-    this.device.queue.writeBuffer(this.timeInfoBuffer, 0, new Float32Array([this.nextChunkOffset]));
+    this.device.queue.writeBuffer(this.timeInfoBuffer, 0, new Float32Array([0]));
+    console.log("create with soundType ", soundType);
+    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, soundType]));
 
     const commandEncoder = this.device.createCommandEncoder();
-
     const pass = commandEncoder.beginComputePass();
     pass.setPipeline(this.pipeline);
     pass.setBindGroup(0, this.bindGroup);
@@ -137,21 +123,15 @@ export default class WebGpuAudioEngine {
     audioSource.buffer = audioBuffer;
     audioSource.connect(this.audioContext.destination);
 
-    if (this.nextChunkOffset !== 0) audioSource.start(this.nextChunkOffset); // workaround to remove 2nd chunk glitch
-
-    this.nextChunkOffset += audioSource.buffer.duration;
-//    await this.createSoundChunk();
-
+    audioSource.start(0); // workaround to remove 2nd chunk glitch
   }
 
-  public updateAudioParams(freq: number, volume: number, waveFormNum: number) {
-    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, waveFormNum]));
+  public updateAudioParams(freq: number, volume: number, oneShotNum: number) {
+    console.log("update with soundType ", oneShotNum);
+    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, oneShotNum]));
   }
 
   public async stop() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-    }
     if (this.audioContext) await this.audioContext.suspend();
     if (this.audioContext) await this.audioContext.close();
   }

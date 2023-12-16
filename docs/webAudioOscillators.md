@@ -3,7 +3,7 @@ title: WebAudio Oscillators
 ---
 
 import CodeBlock from '@theme/CodeBlock';
-import WebAudioOscillatorJs from '!!raw-loader!../../src/utils/WebAudioOscillator.js';
+import WebAudioOscillatorJs from '!!raw-loader!../src/utils/WebAudioOscillator.js';
 
 # WebAudio Oscillators
 ## Live Code Example

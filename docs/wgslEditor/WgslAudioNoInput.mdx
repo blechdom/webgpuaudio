@@ -1,0 +1,116 @@
+---
+title: WGSL Audio Editor, no real-time inputs
+sidebar_position: 1
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, useControls, button } from 'leva'
+import WebGpuAudioEngine from '../../src/utils/WebGpuAudioEngineNoInput.ts';
+import sineShader from '!!raw-loader!../../src/shaders/sine.wgsl';
+import triangleShader from '!!raw-loader!../../src/shaders/triangle.wgsl';
+import squareShader from '!!raw-loader!../../src/shaders/square.wgsl';
+import sawtoothShader from '!!raw-loader!../../src/shaders/sawtooth.wgsl';
+import globalIdXShader from '!!raw-loader!../../src/shaders/globalIdX.wgsl';
+import timeShader from '!!raw-loader!../../src/shaders/time.wgsl';
+
+export default function WgslAudioNoInput() {
+  const shaders = ["sine", "triangle", "square", "sawtooth", "globalIdX", "time"];
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+
+  const [playing, setPlaying] = useState(false);
+  const [engine, setEngine] = useState(undefined);
+  const [code, setCode] = React.useState(sineShader);
+
+  useEffect(() => {
+    return () => {
+      stopMakingSound();
+    }
+  }, []);
+
+  const onChange = useCallback((val, viewUpdate) => {
+    console.log('val:', val);
+    setCode(val);
+  }, []);
+
+  const { chunkDurationInSeconds, workgroupSize, loadShader } = useControls({
+    loadShader: {options: shaders},
+    chunkDurationInSeconds: {
+      value: 0.25,
+      min: 0.03,
+      max: 1.0,
+      step: 0.01
+    },
+    workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
+  }, [playing]);
+
+  useEffect(() => {
+    if (playing) {
+      startMakingSound();
+    } else {
+      stopMakingSound();
+    }
+  }, [playing]);
+
+  async function startMakingSound() {
+    if (engine === undefined) {
+      const engineInit = new WebGpuAudioEngine(chunkDurationInSeconds);
+      await engineInit.initGPU({
+        code,
+        entryPoint: 'synthesize',
+        workgroupSize,
+      });
+      setEngine(engineInit);
+    }
+  }
+
+  async function stopMakingSound() {
+    if (engine) {
+      await engine.stop();
+      setEngine(undefined);
+    }
+  }
+
+  useEffect(() => {
+    if(playing) setPlaying(false);
+  }, [chunkDurationInSeconds, workgroupSize, code])
+
+  useEffect(() => {
+    console.log("shader", loadShader);
+    switch(loadShader) {
+      case "sine":
+        setCode(sineShader);
+        break;
+      case "triangle":
+        setCode(triangleShader);
+        break;
+      case "square":
+        setCode(squareShader);
+        break;
+      case "sawtooth":
+        setCode(sawtoothShader);
+        break;
+      case "globalIdX":
+        setCode(globalIdXShader);
+        break;
+      case "time":
+        setCode(timeShader);
+        break;
+      default:
+        setCode(sineShader);
+    }
+  }, [loadShader]);
+
+  useEffect(() => {
+    if (engine) engine.playSound();
+  }, [engine])
+
+  return (
+    <>
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+    </>
+  );
+}

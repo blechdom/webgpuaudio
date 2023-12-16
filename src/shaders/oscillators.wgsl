@@ -7,7 +7,7 @@ struct TimeInfo {
 }
 
 struct AudioParam {
-  @location(0) @interpolate(linear) frequency: f32,
+  frequency: f32,
   gain: f32,
   waveForm: f32
 }

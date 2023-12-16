@@ -1,0 +1,134 @@
+---
+title: WGSL Audio Editor, with real-time inputs
+sidebar_position: 2
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, useControls, button, folder } from 'leva'
+import WebGpuAudioEngine from '../../src/utils/WebGpuAudioEngine.ts';
+import oscillatorsShader from '!!raw-loader!../../src/shaders/oscillators.wgsl';
+import oneShotShader from '!!raw-loader!../../src/shaders/oneShot.wgsl';
+
+export default function WgslAudioEditorWithInputs() {
+  const waveForms = ["sine", "triangle", "square", "sawtooth"];
+  const shaders = ["oscillators", "oneShot"];
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+
+  const [playing, setPlaying] = useState(false);
+  const [engine, setEngine] = useState();
+  const [code, setCode] = React.useState(oscillatorsShader);
+  const [freq, setFreq] = useState(440);
+
+  useEffect(() => {
+    return () => {
+      stopMakingSound();
+    }
+  }, []);
+
+  const onChange = useCallback((val, viewUpdate) => {
+    console.log('val:', val);
+    setCode(val);
+  }, []);
+
+  const { volume, waveForm, chunkDurationInSeconds, workgroupSize, loadShader } = useControls({
+    waveForm: {options: waveForms},
+    frequency: {
+      value: 60,
+      min: 0,
+      max: 100,
+      step: 0.0001,
+      onChange: (v) => {
+        const minIn = 0;
+        const maxIn = 100;
+        const minOut = Math.log(40);
+        const maxOut = Math.log(3000);
+        const scale = (maxOut - minOut) / (maxIn - minIn);
+        setFreq(Math.exp(minOut + scale * (v - minIn)));
+      },
+    },
+    string: {value: 'Hz', label: freq.toFixed(3), editable: false},
+    volume: {
+      value: 0.15,
+      min: 0.0,
+      max: 1.0,
+      step: 0.01
+    },
+    WebGPUSettings: folder({
+      loadShader: {options: shaders},
+      chunkDurationInSeconds: {
+        value: 0.1,
+        min: 0.03,
+        max: 1.0,
+        step: 0.01
+      },
+      workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    }, {collapsed: true}),
+    [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
+  }, [playing, freq]);
+
+  useEffect(() => {
+    if (playing) {
+      startMakingSound();
+    } else {
+      stopMakingSound();
+    }
+  }, [playing]);
+
+  async function startMakingSound() {
+    if (engine === undefined) {
+      const engineInit = new WebGpuAudioEngine(chunkDurationInSeconds);
+      await engineInit.initGPU({
+        code,
+        entryPoint: 'synthesize',
+        workgroupSize,
+      });
+      setEngine(engineInit);
+    }
+  }
+
+  async function stopMakingSound() {
+    if (engine) {
+      await engine.stop();
+      setEngine(undefined);
+    }
+  }
+
+  useEffect(() => {
+    if(playing) setPlaying(false);
+  }, [chunkDurationInSeconds, workgroupSize, code])
+
+  useEffect(() => {
+    console.log("shader", loadShader);
+    switch(loadShader) {
+      case "oscillators":
+        setCode(oscillatorsShader);
+        break;
+      case "oneShot":
+        setCode(oneShotShader);
+        break;
+      default:
+        setCode(oscillatorsShader);
+    }
+  }, [loadShader]);
+
+  useEffect(() => {
+    if (engine) engine.playSound();
+  }, [engine])
+
+  useEffect(() => {
+    if (engine && engine.updateAudioParams) {
+      let waveFormNum = waveForms.indexOf(waveForm);
+      engine.updateAudioParams(freq, volume, waveFormNum);
+    }
+  }, [engine, freq, volume, waveForm]);
+
+
+  return (
+    <>
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+    </>
+  );
+}
