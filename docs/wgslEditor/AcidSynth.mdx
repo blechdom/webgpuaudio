@@ -1,0 +1,234 @@
+---
+title: Acid Synth
+sidebar_position: 4
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, useControls, button, folder } from 'leva'
+import AcidSynthEngine from '../../src/utils/AcidSynthEngine.ts';
+import acidSynthShader from '!!raw-loader!../../src/shaders/acidSynth.wgsl';
+
+export default function WgslAudioEditorWithInputs() {
+  const shaders = ["acidSynth"];
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+
+  const [playing, setPlaying] = useState(false);
+  const [engine, setEngine] = useState();
+  const [code, setCode] = React.useState(acidSynthShader);
+  const [freq, setFreq] = useState(440);
+
+  useEffect(() => {
+    return () => {
+      stopMakingSound();
+    }
+  }, []);
+
+  const onChange = useCallback((val, viewUpdate) => {
+    console.log('val:', val);
+    setCode(val);
+  }, []);
+
+  const {
+    volume,
+    partials,
+    frequency,
+    timeMod,
+    timeScale,
+    dist,
+    dur,
+    ratio,
+    sampOffset,
+    stereo,
+    nse,
+    res,
+    lfo,
+    flt,
+    chunkDurationInSeconds,
+    workgroupSize,
+    loadShader
+  } = useControls({
+    fundamental: {
+      value: 80,
+      min: 0,
+      max: 100,
+      step: 0.0001,
+      onChange: (v) => {
+        const minIn = 0;
+        const maxIn = 100;
+        const minOut = Math.log(1);
+        const maxOut = Math.log(1000);
+        const scale = (maxOut - minOut) / (maxIn - minIn);
+        setFreq(Math.exp(minOut + scale * (v - minIn)));
+      },
+    },
+    string: {value: 'Log of Fundamental', label: freq.toFixed(3), editable: false},
+    frequency: {
+      value: 38.0,
+      min: 0.2,
+      max: 100.0,
+      step: 0.01
+    },
+    partials: {
+      value: 256,
+      min: 1,
+      max: 256,
+      step: 1
+    },
+    ratio: {
+      value: 2.0,
+      min: 1.0,
+      max: 32.0,
+      step: 0.1
+    },
+    sampOffset: {
+      value: 1,
+      min: 1,
+      max: 32,
+      step: 1
+    },
+    dist: {
+      value: 0.5,
+      min: 0.01,
+      max: 5.0,
+      step: 0.01
+    },
+    lfo: {
+      value: 1.0,
+      min: 0.0,
+      max: 64.0,
+      step: 0.01
+    },
+    flt: {
+      value: -1.5,
+      min: -64.0,
+      max: 64.0,
+      step: 0.01
+    },
+    res: {
+      value: 2.2,
+      min: 0.0,
+      max: 15.0,
+      step: 0.01
+    },
+    dur: {
+      value: 0.26,
+      min: 0.001,
+      max: 2.0,
+      step: 0.001
+    },
+    timeMod: {
+      value: 16,
+      min: 1,
+      max: 32,
+      step: 1
+    },
+    nse: {
+      value: 19871.8972,
+      min: 0.0,
+      max: 40000,
+      step: 0.001
+    },
+    stereo: {
+      value: 0.01,
+      min: -8.0,
+      max: 8.0,
+      step: 0.001
+    },
+    timeScale: {
+      value: 9.0,
+      min: 0.01,
+      max: 48.0,
+      step: 0.01
+    },
+    volume: {
+      value: 0.15,
+      min: 0.0,
+      max: 1.0,
+      step: 0.01
+    },
+    WebGPUSettings: folder({
+      loadShader: {options: shaders},
+      chunkDurationInSeconds: {
+        value: 0.1,
+        min: 0.03,
+        max: 1.0,
+        step: 0.01
+      },
+      workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    }, {collapsed: true}),
+    [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
+  }, [playing, freq]);
+
+  useEffect(() => {
+    if (playing) {
+      startMakingSound();
+    } else {
+      stopMakingSound();
+    }
+  }, [playing]);
+
+  async function startMakingSound() {
+    if (engine === undefined) {
+      const engineInit = new AcidSynthEngine(chunkDurationInSeconds);
+      await engineInit.initGPU({
+        code,
+        entryPoint: 'synthesize',
+        workgroupSize,
+      });
+      setEngine(engineInit);
+    }
+  }
+
+  async function stopMakingSound() {
+    if (engine) {
+      await engine.stop();
+      setEngine(undefined);
+    }
+  }
+
+  useEffect(() => {
+    if(playing) setPlaying(false);
+  }, [chunkDurationInSeconds, workgroupSize, code])
+
+  useEffect(() => {
+    console.log("shader", loadShader);
+    switch(loadShader) {
+      case "acidSynth":
+        setCode(acidSynthShader);
+        break;
+      default:
+        setCode(acidSynthShader);
+    }
+  }, [loadShader]);
+
+  useEffect(() => {
+    if (engine) engine.playSound();
+  }, [engine])
+
+  useEffect(() => {
+    if (engine && engine.updateAudioParams) {
+      engine.updateAudioParams(new Float32Array([partials, frequency, timeMod, timeScale, volume, dist, dur, ratio, sampOffset, freq, stereo, nse, res, lfo, flt]));
+    }
+  }, [engine, freq, volume, partials, frequency, timeMod, timeScale, volume, dist, dur, ratio, sampOffset, stereo, nse, res, lfo, flt]);
+
+
+  return (
+    <>
+      <ul>
+        <li>Audio Synthesis uses rough streaming architecture to get chunks out of WebGPU and send control buffers to
+          control a WebGPU compute shader.</li>
+        <li>Select different shaders in the Leva control panel to hear different sounds.</li>
+        <li>When changing WebGPU Parameters, the sound will stop and will need to be restarted.</li>
+        <li>Changing sound parameters will happen at the rate of the chunk duration, so if you change the frequency, it
+          will take a chunk duration to hear the change. (Interpolation options coming soon.)</li>
+        <li>Fully refresh the page if things get strange.</li>
+        <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
+      </ul>
+
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+    </>
+  );
+}
