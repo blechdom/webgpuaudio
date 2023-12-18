@@ -5,10 +5,10 @@ sidebar_position: 1
 # WebGPU Audio Resources
 
 Live WGSL editor Examples: 
-  * [WebGPU Samples](./wgslEditor)
-    * [Streaming Oscillators and Timers (no live inputs)](./wgslEditor/WgslAudioNoInput.mdx)
-    * [Streaming Oscillators and Controls (with live inputs)](./wgslEditor/WgslAudioEditorWithInputs.mdx)
-    * [One-Shot Synths and Controls (not streaming)](./wgslEditor/WgslAudioOneShots.mdx)
+  * WebGPU Samples
+    * [Streaming Oscillators and Timers (no live inputs)](wgslEditor/WgslAudioNoInput.mdx)
+    * [Streaming Oscillators and Controls (with live inputs)](wgslEditor/WgslAudioEditorWithInputs.mdx)
+    * [One-Shot Synths and Controls (not streaming)](wgslEditor/WgslAudioOneShots.mdx)
   * [WebWorker WebGPU Samples](https://webgpu.github.io/webgpu-samples/)
 
 # Useful Links
