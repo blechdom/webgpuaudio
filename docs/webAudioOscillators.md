@@ -1,5 +1,6 @@
 ---
 title: WebAudio Oscillators
+sidebar_position: 4
 ---
 
 import CodeBlock from '@theme/CodeBlock';
@@ -7,6 +8,7 @@ import WebAudioOscillatorJs from '!!raw-loader!../src/utils/WebAudioOscillator.j
 
 # WebAudio Oscillators
 ## Live Code Example
+Oscillators Audio Example using WebAudio API only, no WebGPU.
 
 ```jsx live
 

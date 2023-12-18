@@ -109,16 +109,6 @@ export default function WgslAudioNoInput() {
 
   return (
     <>
-    <ul>
-      <li>Audio Synthesis uses rough streaming architecture to get chunks out of WebGPU.</li>
-      <li>Select different shaders in the Leva control panel to hear different sounds.</li>
-      <li>When changing WebGPU Parameters, the sound will stop and will need to be restarted.</li>
-      <li>Some of the sounds reveal the underlying architecture of the WebGPU shader, such a s the `globalIdX` and `time`
-          shaders.</li>
-      <li>Fully refresh the page if things get strange.</li>
-      <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
-    </ul>
-
       <Leva flat oneLineLabels/>
       <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
     </>

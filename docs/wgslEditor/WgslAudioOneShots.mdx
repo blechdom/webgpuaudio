@@ -1,6 +1,6 @@
 ---
 title: WGSL Audio Editor, One-Shots
-sidebar_position: 1
+sidebar_position: 3
 ---
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -139,6 +139,18 @@ export default function WgslAudioOneShots() {
 
   return (
     <>
+      <ul>
+        <li>Audio Synthesis uses rough streaming architecture to get chunks out of WebGPU and send control buffers to
+          control a WebGPU compute shader.
+        </li>
+        <li>Select different shaders in the Leva control panel to hear different sounds.</li>
+        <li>When changing WebGPU Parameters, the sound will stop and will need to be restarted.</li>
+        <li>Changing sound parameters will happen at the rate of the chunk duration, so if you change the frequency, it
+          will take a chunk duration to hear the change.
+        </li>
+        <li>Fully refresh the page if things get strange.</li>
+        <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
+      </ul>
       <Leva flat oneLineLabels/>
       <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
     </>

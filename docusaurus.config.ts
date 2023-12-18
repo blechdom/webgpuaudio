@@ -63,7 +63,6 @@ const config: Config = {
           position: 'left',
           label: 'Explorations',
         },
-        {to: '/blog', label: 'Thoughts', position: 'left'},
         {
           href: 'https://github.com/blechdom/webgpuaudio',
           label: 'GitHub',
@@ -75,7 +74,6 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
           items: [
             {
               label: 'Explorations',
@@ -84,15 +82,10 @@ const config: Config = {
           ],
         },
         {
-          title: 'More',
           items: [
             {
-              label: 'Thoughts',
-              to: '/blog',
-            },
-            {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/blechdom/webgpuaudio',
             },
           ],
         },
