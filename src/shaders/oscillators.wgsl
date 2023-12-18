@@ -33,11 +33,11 @@ fn synthesize(@builtin(global_invocation_id) global_id: vec3<u32>) {
 fn oscillator(time: f32, frequency: f32, gain: f32, waveForm: f32) -> vec2<f32> {
 
     var v: f32 = sin(time * frequency * PI2);
-    if (waveForm == 1) {
+    if (waveForm == 1.0) {
        v = -abs(fract(time * frequency)-0.5)*4.0-1.0;
-    } else if (waveForm == 2) {
+    } else if (waveForm == 2.0) {
         v = step(fract(time * frequency),0.5)*2.0-1.0;
-    } else if (waveForm == 3) {
+    } else if (waveForm == 3.0) {
         v = 1.0 - 2.0*fract(time * frequency);
     }
     return vec2(v * gain);

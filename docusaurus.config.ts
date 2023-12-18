@@ -2,21 +2,24 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
+const organizationName = "blechdom";
+const projectName = "webgpuaudio";
+
 const config: Config = {
   title: 'WebGPU Audio',
   tagline: 'Exploring Audio with WebGPU',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://webgpuaudio.com',
+  url: `https://${organizationName}.github.io`,
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: `/${projectName}/`,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'blechdom', // Usually your GitHub org/user name.
-  projectName: 'webgpuaudio', // Usually your repo name.
+  organizationName: `${organizationName}`, // Usually your GitHub org/user name.
+  projectName: `${projectName}`, // Usually your repo name.
   deploymentBranch: 'main', // Deployment branch.
   trailingSlash: false,
 

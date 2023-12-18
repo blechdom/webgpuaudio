@@ -1,7 +1,6 @@
 const NUM_CHANNELS = 2;
 const MAX_BUFFERED_CHUNKS = 2;
 
-
 export default class WebGpuAudioEngine {
   public audioContext: AudioContext | undefined;
   public chunkDurationInSeconds: number;
@@ -90,7 +89,7 @@ export default class WebGpuAudioEngine {
 
     if (numBufferedChunks > MAX_BUFFERED_CHUNKS) {
       const timeout = this.chunkDurationInSeconds;
-     // this.timeoutId = setTimeout(await this.createSoundChunk.bind(this), timeout * 1000.0);
+      this.timeoutId = setTimeout(await this.createSoundChunk.bind(this), timeout * 1000.0);
       return;
     }
 
@@ -140,7 +139,7 @@ export default class WebGpuAudioEngine {
     if (this.nextChunkOffset !== 0) audioSource.start(this.nextChunkOffset); // workaround to remove 2nd chunk glitch
 
     this.nextChunkOffset += audioSource.buffer.duration;
-//    await this.createSoundChunk();
+    await this.createSoundChunk();
 
   }
 
