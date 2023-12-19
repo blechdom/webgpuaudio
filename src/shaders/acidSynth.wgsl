@@ -24,7 +24,7 @@ struct AudioParam {
 }
 
 @group(0) @binding(0) var<uniform> time_info: TimeInfo;
-@group(0) @binding(1) var<storage, read_write> song_chunk: array<vec2<f32>>; // 2 channel pcm data
+@group(0) @binding(1) var<storage, read_write> sound_chunk: array<vec2<f32>>; // 2 channel pcm data
 @binding(2) @group(0) var<storage, read> audio_param: AudioParam;
 
 @compute
@@ -32,13 +32,13 @@ struct AudioParam {
 fn synthesize(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let sampleCount: u32 = global_id.x;
 
-    if (sampleCount >= arrayLength(&song_chunk)) {
+    if (sampleCount >= arrayLength(&sound_chunk)) {
         return;
     }
 
     let t = f32(sampleCount) / SAMPLE_RATE;
 
-    song_chunk[sampleCount] = mainSound(time_info.offset + t, audio_param);
+    sound_chunk[sampleCount] = mainSound(time_info.offset + t, audio_param);
 }
 
 fn dist(s: vec2<f32>, d: f32) -> vec2<f32> {

@@ -1,22 +1,22 @@
 ---
-title: Acid Synth
-sidebar_position: 4
+title: Inversion Machine
+sidebar_position: 5
 ---
 
 import React, { useEffect, useState, useCallback } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { wgsl } from "@iizukak/codemirror-lang-wgsl";
 import { Leva, useControls, button, folder } from 'leva'
-import AcidSynthEngine from '../../src/utils/AcidSynthEngine.ts';
-import acidSynthShader from '!!raw-loader!../../src/shaders/acidSynth.wgsl';
+import InversionMachineEngine from '../../src/utils/InversionMachineEngine.ts';
+import inversionMachine from '!!raw-loader!../../src/shaders/inversionMachine.wgsl';
 
 export default function WgslAudioEditorWithInputs() {
-  const shaders = ["acidSynth"];
+  const shaders = ["inversionMachine"];
   const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
 
   const [playing, setPlaying] = useState(false);
   const [engine, setEngine] = useState();
-  const [code, setCode] = React.useState(acidSynthShader);
+  const [code, setCode] = React.useState(inversionMachine);
   const [freq, setFreq] = useState(440);
 
   useEffect(() => {
@@ -30,114 +30,64 @@ export default function WgslAudioEditorWithInputs() {
 
   const {
     volume,
-    partials,
-    frequency,
-    timeMod,
-    speed,
-    dist,
-    dur,
-    ratio,
-    sampOffset,
-    stereo,
-    nse,
-    res,
-    lfo,
-    flt,
+    bouncePitch,
+    fractalIterations,
+    noiseFlare,
+    squelchMod,
+    squelch,
+    squelchSpeed,
+    bounceTime,
+    noiseThing,
     chunkDurationInSeconds,
     workgroupSize,
     loadShader
   } = useControls({
-    fundamental: {
-      value: 80,
+    fractalIterations: {
+      value: 23,
+      min: 18,
+      max: 44,
+      step: 1.0
+    },
+    bouncePitch: {
+      value: 4000,
+      min: 1,
+      max: 20000,
+      step: 1
+    },
+    bounceTime: {
+      value: 0.3,
+      min: 0.001,
+      max: 4,
+      step: 0.001
+    },
+    noiseThing: {
+      value: 0.6,
+      min: .001,
+      max: 4,
+      step: .001
+    },
+    squelch: {
+      value: 2000,
+      min: 0.0,
+      max: 5000,
+      step: 0.01
+    },
+    squelchSpeed: {
+      value: 10,
+      min: 0.5,
+      max: 100.0,
+      step: 0.001
+    },
+    noiseFlare: {
+      value: 10,
       min: 0,
       max: 100,
-      step: 0.0001,
-      onChange: (v) => {
-        const minIn = 0;
-        const maxIn = 100;
-        const minOut = Math.log(1);
-        const maxOut = Math.log(1000);
-        const scale = (maxOut - minOut) / (maxIn - minIn);
-        setFreq(Math.exp(minOut + scale * (v - minIn)));
-      },
-    },
-    string: {value: 'Log of Fundamental', label: freq.toFixed(3), editable: false},
-    frequency: {
-      value: 38.0,
-      min: 0.2,
-      max: 100.0,
-      step: 0.01
-    },
-    partials: {
-      value: 256,
-      min: 1,
-      max: 256,
-      step: 1
-    },
-    ratio: {
-      value: 2.0,
-      min: 1.0,
-      max: 32.0,
-      step: 0.1
-    },
-    sampOffset: {
-      value: 1,
-      min: 1,
-      max: 32,
-      step: 1
-    },
-    dist: {
-      value: 0.5,
-      min: 0.01,
-      max: 5.0,
-      step: 0.01
-    },
-    lfo: {
-      value: 1.0,
-      min: 0.0,
-      max: 64.0,
-      step: 0.01
-    },
-    flt: {
-      value: -1.5,
-      min: -64.0,
-      max: 64.0,
-      step: 0.01
-    },
-    res: {
-      value: 2.2,
-      min: 0.0,
-      max: 15.0,
-      step: 0.01
-    },
-    dur: {
-      value: 0.26,
-      min: 0.001,
-      max: 2.0,
       step: 0.001
     },
-    timeMod: {
-      value: 16,
-      min: 1,
-      max: 32,
-      step: 1
-    },
-    nse: {
-      value: 19871.8972,
-      min: 0.0,
-      max: 40000,
-      step: 0.001
-    },
-    stereo: {
-      value: 0.01,
-      min: -8.0,
-      max: 8.0,
-      step: 0.001
-    },
-    speed: {
-      value: 9.0,
-      min: 0.01,
-      max: 30.0,
+    squelchMod: {
+      value: 100,
+      min: 0,
+      max: 2000,
       step: 0.01
     },
     volume: {
@@ -169,7 +119,7 @@ export default function WgslAudioEditorWithInputs() {
 
   async function startMakingSound() {
     if (engine === undefined) {
-      const engineInit = new AcidSynthEngine(chunkDurationInSeconds);
+      const engineInit = new InversionMachineEngine(chunkDurationInSeconds);
       await engineInit.initGPU({
         code,
         entryPoint: 'synthesize',
@@ -193,11 +143,11 @@ export default function WgslAudioEditorWithInputs() {
   useEffect(() => {
     console.log("shader", loadShader);
     switch(loadShader) {
-      case "acidSynth":
-        setCode(acidSynthShader);
+      case "inversionMachine":
+        setCode(inversionMachine);
         break;
       default:
-        setCode(acidSynthShader);
+        setCode(inversionMachine);
     }
   }, [loadShader]);
 
@@ -207,9 +157,9 @@ export default function WgslAudioEditorWithInputs() {
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
-      engine.updateAudioParams(new Float32Array([partials, frequency, timeMod, speed, volume, dist, dur, ratio, sampOffset, freq, stereo, nse, res, lfo, flt]));
+      engine.updateAudioParams(new Float32Array([bouncePitch, fractalIterations, noiseFlare, squelchMod, volume, squelch, squelchSpeed, bounceTime, noiseThing]));
     }
-  }, [engine, freq, volume, partials, frequency, timeMod, speed, volume, dist, dur, ratio, sampOffset, stereo, nse, res, lfo, flt]);
+  }, [engine, bouncePitch, fractalIterations, noiseFlare, squelchMod, volume, squelch, squelchSpeed, bounceTime, noiseThing]);
 
 
   return (
@@ -223,7 +173,7 @@ export default function WgslAudioEditorWithInputs() {
           will take a chunk duration to hear the change. (Interpolation options coming soon.)</li>
         <li>Fully refresh the page if things get strange.</li>
         <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
-        <li>Borrowed heavily from <b>sound - acid jam</b> by <i>srtuss</i> on shadertoy: <a href={"https://www.shadertoy.com/view/ldfSW2"}>https://www.shadertoy.com/view/ldfSW2</a></li>
+        <li>Borrowed heavily from <b>The Inversion Machine</b> by <i>Kali</i> on shadertoy: <a href={"https://www.shadertoy.com/view/4dsGD7"}>https://www.shadertoy.com/view/4dsGD7</a></li>
       </ul>
 
       <Leva flat oneLineLabels/>

@@ -12,8 +12,7 @@ const FeatureList: FeatureItem[] = [
     title: 'React',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Frontend framework. React is a JavaScript library for building user interfaces.
       </>
     ),
   },
@@ -21,8 +20,7 @@ const FeatureList: FeatureItem[] = [
     title: 'Leva',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Leva is a React library that allows you to create controls for your variables in a separate panel.
       </>
     ),
   },
@@ -30,8 +28,7 @@ const FeatureList: FeatureItem[] = [
     title: 'CodeMirror',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        CodeMirror is a code editor implemented in JavaScript for the browser.
       </>
     ),
   },
@@ -39,8 +36,7 @@ const FeatureList: FeatureItem[] = [
     title: 'WebAudio API',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        WebAudio API is a web standard for processing and synthesizing audio in the browser.
       </>
     ),
   },
@@ -48,8 +44,7 @@ const FeatureList: FeatureItem[] = [
     title: 'WebGPU API',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        WebGPU API is a future web standard for massively parallel GPU programming in the browser.
       </>
     ),
   },
@@ -57,8 +52,15 @@ const FeatureList: FeatureItem[] = [
     title: 'WebWorkers API',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        WebWorkers API is a web standard for running JavaScript in a background thread.
+      </>
+    ),
+  },
+  {
+    title: 'ringbuf.js',
+    description: (
+      <>
+        ringbuf.js is a JavaScript library for creating ring buffers.
       </>
     ),
   },

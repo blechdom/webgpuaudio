@@ -9,6 +9,7 @@ Live WGSL editor Examples:
     * [Streaming Oscillators and Timers (no live inputs)](wgslEditor/WgslAudioNoInput.mdx)
     * [Streaming Oscillators and Controls (with live inputs)](wgslEditor/WgslAudioEditorWithInputs.mdx)
     * [One-Shot Synths and Controls (not streaming)](wgslEditor/WgslAudioOneShots.mdx)
+    * [Acid Synth](wgslEditor/AcidSynth.mdx)
   * [WebWorker WebGPU Samples](https://webgpu.github.io/webgpu-samples/)
 
 # Useful Links
