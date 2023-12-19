@@ -32,21 +32,33 @@ export default function WgslAudioEditorWithInputs() {
     volume,
     bouncePitch,
     fractalIterations,
-    noiseFlare,
+    noiseTime,
     squelchMod,
     squelch,
     squelchSpeed,
     bounceTime,
-    noiseThing,
     chunkDurationInSeconds,
     workgroupSize,
-    loadShader
+    loadShader,
+    fractalGain,
+    bounceGain,
+    squelchGain,
+    noiseGain,
+    alarmTime,
+    alarmNoise,
+    alarmGain,
   } = useControls({
     fractalIterations: {
       value: 23,
       min: 18,
       max: 44,
       step: 1.0
+    },
+    fractalGain: {
+      value: 2,
+      min: 0,
+      max: 4,
+      step: 0.001
     },
     bouncePitch: {
       value: 4000,
@@ -60,17 +72,17 @@ export default function WgslAudioEditorWithInputs() {
       max: 4,
       step: 0.001
     },
-    noiseThing: {
-      value: 0.6,
-      min: .001,
-      max: 4,
-      step: .001
+    bounceGain: {
+      value: 20,
+      min: 0,
+      max: 40,
+      step: 0.001
     },
     squelch: {
       value: 2000,
       min: 0.0,
       max: 5000,
-      step: 0.01
+      step: 0.001
     },
     squelchSpeed: {
       value: 10,
@@ -78,23 +90,53 @@ export default function WgslAudioEditorWithInputs() {
       max: 100.0,
       step: 0.001
     },
-    noiseFlare: {
+    squelchMod: {
+      value: 100,
+      min: 0,
+      max: 2000,
+      step: 0.001
+    },
+    squelchGain: {
+      value: 0.7,
+      min: 0.0,
+      max: 2.0,
+      step: 0.001
+    },
+    noiseTime: {
       value: 10,
       min: 0,
       max: 100,
       step: 0.001
     },
-    squelchMod: {
-      value: 100,
-      min: 0,
-      max: 2000,
-      step: 0.01
+    noiseGain: {
+      value: 4,
+      min: 0.0,
+      max: 20,
+      step: 0.001
+    },
+    alarmTime: {
+      value: 4,
+      min: 1,
+      max: 20,
+      step: 0.001
+    },
+    alarmNoise: {
+      value: 5,
+      min: -6000,
+      max: 6000,
+      step: 0.001
+    },
+    alarmGain: {
+      value: 2,
+      min: 0.0,
+      max: 15,
+      step: 0.001
     },
     volume: {
       value: 0.15,
       min: 0.0,
       max: 1.0,
-      step: 0.01
+      step: 0.001
     },
     WebGPUSettings: folder({
       loadShader: {options: shaders},
@@ -157,9 +199,9 @@ export default function WgslAudioEditorWithInputs() {
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
-      engine.updateAudioParams(new Float32Array([bouncePitch, fractalIterations, noiseFlare, squelchMod, volume, squelch, squelchSpeed, bounceTime, noiseThing]));
+      engine.updateAudioParams(new Float32Array([bouncePitch, fractalIterations, noiseTime, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain, noiseGain, alarmTime, alarmNoise, alarmGain]));
     }
-  }, [engine, bouncePitch, fractalIterations, noiseFlare, squelchMod, volume, squelch, squelchSpeed, bounceTime, noiseThing]);
+  }, [engine, bouncePitch, fractalIterations, noiseTime, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain, noiseGain, alarmTime, alarmNoise, alarmGain]);
 
 
   return (

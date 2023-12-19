@@ -47,7 +47,7 @@ export default class InversionMachineEngine {
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     this.audioParamBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT * 9, //paramArray.length
+      size: Float32Array.BYTES_PER_ELEMENT * 16, //paramArray.length
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
     this.audioShaderModule = this.device.createShaderModule({code});
