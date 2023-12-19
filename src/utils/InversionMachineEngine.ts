@@ -32,44 +32,48 @@ export default class InversionMachineEngine {
 
   public async initGPU({code, entryPoint, workgroupSize}) {
     this.workgroupSize = workgroupSize;
-    const adapter = await navigator.gpu.requestAdapter();
-    this.device = await adapter.requestDevice();
-    this.timeInfoBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    });
-    this.chunkBuffer = this.device.createBuffer({
-      size: this.chunkBufferSize,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-    });
-    this.chunkMapBuffer = this.device.createBuffer({
-      size: this.chunkBufferSize,
-      usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
-    });
-    this.audioParamBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT * 16, //paramArray.length
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-    });
-    this.audioShaderModule = this.device.createShaderModule({code});
-    this.pipeline = this.device.createComputePipeline({
-      layout: 'auto',
-      compute: {
-        module: this.audioShaderModule,
-        entryPoint: entryPoint,
-        constants: {
-          SAMPLE_RATE: this.sampleRate,
-          WORKGROUP_SIZE: workgroupSize
-        }
+    if(navigator?.gpu) {
+      const adapter = await navigator.gpu.requestAdapter();
+      if (adapter) {
+        this.device = await adapter.requestDevice();
+        this.timeInfoBuffer = this.device.createBuffer({
+          size: Float32Array.BYTES_PER_ELEMENT,
+          usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+        this.chunkBuffer = this.device.createBuffer({
+          size: this.chunkBufferSize,
+          usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+        });
+        this.chunkMapBuffer = this.device.createBuffer({
+          size: this.chunkBufferSize,
+          usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+        });
+        this.audioParamBuffer = this.device.createBuffer({
+          size: Float32Array.BYTES_PER_ELEMENT * 16, //paramArray.length
+          usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        });
+        this.audioShaderModule = this.device.createShaderModule({code});
+        this.pipeline = this.device.createComputePipeline({
+          layout: 'auto',
+          compute: {
+            module: this.audioShaderModule,
+            entryPoint: entryPoint,
+            constants: {
+              SAMPLE_RATE: this.sampleRate,
+              WORKGROUP_SIZE: workgroupSize
+            }
+          }
+        });
+        this.bindGroup = this.device.createBindGroup({
+          layout: this.pipeline.getBindGroupLayout(0),
+          entries: [
+            {binding: 0, resource: {buffer: this.timeInfoBuffer}},
+            {binding: 1, resource: {buffer: this.chunkBuffer}},
+            {binding: 2, resource: {buffer: this.audioParamBuffer}},
+          ]
+        });
       }
-    });
-    this.bindGroup = this.device.createBindGroup({
-      layout: this.pipeline.getBindGroupLayout(0),
-      entries: [
-        {binding: 0, resource: {buffer: this.timeInfoBuffer}},
-        {binding: 1, resource: {buffer: this.chunkBuffer}},
-        {binding: 2, resource: {buffer: this.audioParamBuffer}},
-      ]
-    });
+    }
   }
 
   public playSound() {
