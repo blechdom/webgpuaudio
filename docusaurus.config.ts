@@ -53,6 +53,12 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/tolerance_0.PNG',
+    announcementBar: {
+      id: 'chromeFlags',
+      content: '🚩 Using WebGPU API requires <a href="chrome://flags/#enable-webgpu-developer-features">chrome://flags/#enable-webgpu-developer-features</a> flag to be enabled. Copy/paste the link in your browser, enable the flag, and restart chrome if necessary.',
+      backgroundColor: "#F9C80E",
+      isCloseable: false
+    },
     navbar: {
       title: 'WebGPU Audio',
       logo: {
