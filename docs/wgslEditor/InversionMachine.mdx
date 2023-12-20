@@ -17,7 +17,6 @@ export default function WgslAudioEditorWithInputs() {
   const [playing, setPlaying] = useState(false);
   const [engine, setEngine] = useState();
   const [code, setCode] = React.useState(inversionMachine);
-  const [freq, setFreq] = useState(440);
 
   useEffect(() => {
     return () => stopMakingSound();
@@ -149,7 +148,7 @@ export default function WgslAudioEditorWithInputs() {
       workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
     }, {collapsed: true}),
     [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
-  }, [playing, freq]);
+  }, [playing]);
 
   useEffect(() => {
     if (playing) {

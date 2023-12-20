@@ -28,7 +28,9 @@
     "raw-loader": "^4.0.2",
     "react": "^18.0.0",
     "react-dat-gui": "^4.1.1",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "wgpu-matrix": "^2.5.1",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.0.1",

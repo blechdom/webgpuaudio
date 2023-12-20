@@ -1,0 +1,47 @@
+---
+title: WebGPU WebWorker Example
+sidebar_position: 1
+---
+import React, { useEffect, useRef } from 'react';
+import Worker from "worker-loader!../../src/workers/worker.js";
+import code from '!!raw-loader!../../src/shaders/knot.wgsl';
+
+
+export default function WebGpuWorker() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      workerInit(canvasRef.current);
+    }
+  }, [canvasRef]);
+
+  async function workerInit(canvas) {
+    const worker = new Worker();
+    worker.addEventListener('message', (ev) => {
+      switch (ev.data.type) {
+        default: {
+          console.error(`Unknown Message Type: ${ev.data.type}`);
+        }
+      }
+    });
+    try {
+      const offscreenCanvas = canvas.transferControlToOffscreen();
+      const devicePixelRatio = window.devicePixelRatio;
+      offscreenCanvas.width = canvas.clientWidth * devicePixelRatio;
+      offscreenCanvas.height = canvas.clientHeight * devicePixelRatio;
+      worker.postMessage({type: 'run', offscreenCanvas, code}, [offscreenCanvas]);
+    } catch (err) {
+      console.warn(err.message);
+      worker.terminate();
+    }
+  }
+
+  return (
+      <canvas
+        ref={canvasRef}
+        width={500}
+        height={500}
+      />
+  );
+}

@@ -33,7 +33,7 @@ export default class InversionMachineEngine {
   public async initGPU({code, entryPoint, workgroupSize}) {
     this.workgroupSize = workgroupSize;
     if(!navigator.gpu) {
-      alert('WebGPU not supported. Enable chrome://flags/#enable-webgpu flag.');
+      alert('Something went wrong. WebGPU does not appear to be supported. Enable chrome://flags/#enable-webgpu flag.');
     }
     const adapter = await navigator.gpu.requestAdapter();
     this.device = await adapter.requestDevice();

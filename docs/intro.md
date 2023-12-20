@@ -11,7 +11,8 @@ Live WGSL editor Examples:
     * [One-Shot Synths and Controls (not streaming)](wgslEditor/WgslAudioOneShots.mdx)
     * [Acid Synth](wgslEditor/AcidSynth.mdx)
     * [Inversion Machine](wgslEditor/InversionMachine.mdx)
-  * [WebWorker WebGPU Samples](https://webgpu.github.io/webgpu-samples/)
+  * WebWorker WebGPU Samples
+    * [WebGPU WebWorker OBJ](webWorker/webGpuWorker.mdx)
 
 # Useful Links
 
