@@ -12,7 +12,6 @@ Live WGSL editor Examples:
     * [Acid Synth](wgslEditor/AcidSynth.mdx)
     * [Inversion Machine (NOISE!)](wgslEditor/InversionMachine.mdx)
   * WebWorker WebGPU Samples
-    * [WebGPU WebWorker OBJ](webWorker/webGpuWorker.mdx)
     * [WebGPU Audio WebWorker](./webWorker/webGpuAudioWorker)
 
 # Useful Links

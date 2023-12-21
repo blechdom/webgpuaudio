@@ -1,9 +1,9 @@
 ---
 title: WebGPU Audio WebWorker Example
-sidebar_position: 2
+sidebar_position: 1
 ---
 import React, { useCallback, useEffect, useRef } from 'react';
-import Worker from "worker-loader!../../src/workers/workerAudio.js";
+import GPUWorker from "worker-loader!../../src/workers/workerAudio.js";
 import sineShader from '!!raw-loader!../../src/shaders/sine.wgsl';
 import triangleShader from '!!raw-loader!../../src/shaders/triangle.wgsl';
 import squareShader from '!!raw-loader!../../src/shaders/square.wgsl';
@@ -137,7 +137,7 @@ export default function WebGpuAudioWorker() {
   }, [engine])
 
   async function workerInit(engine) {
-    const worker = new Worker({type: "module"});
+    const worker = new GPUWorker({type: "module"});
     setGpuWorker(worker);
     worker.addEventListener('message', async(ev) => {
       switch (ev.data.type) {
