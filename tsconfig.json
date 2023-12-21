@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "downlevelIteration": true,
-    "target": "es2015"
+    "target": "es2015",
+    "noImplicitUseStrict": true
   },
   "typeRoots": [
     "src/types/webgpu.d.ts",

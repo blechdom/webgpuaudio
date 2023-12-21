@@ -10,9 +10,10 @@ Live WGSL editor Examples:
     * [Streaming Oscillators and Controls (with live inputs)](wgslEditor/WgslAudioEditorWithInputs.mdx)
     * [One-Shot Synths and Controls (not streaming)](wgslEditor/WgslAudioOneShots.mdx)
     * [Acid Synth](wgslEditor/AcidSynth.mdx)
-    * [Inversion Machine](wgslEditor/InversionMachine.mdx)
+    * [Inversion Machine (NOISE!)](wgslEditor/InversionMachine.mdx)
   * WebWorker WebGPU Samples
     * [WebGPU WebWorker OBJ](webWorker/webGpuWorker.mdx)
+    * [WebGPU Audio WebWorker](./webWorker/webGpuAudioWorker)
 
 # Useful Links
 
