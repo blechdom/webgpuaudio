@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "downlevelIteration": true,
     "target": "es2015",
-    "noImplicitUseStrict": true
+    "noImplicitUseStrict": true,
+    "allowImportingTsExtensions": true,
   },
   "typeRoots": [
     "src/types/webgpu.d.ts",

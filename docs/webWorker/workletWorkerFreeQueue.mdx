@@ -1,15 +1,15 @@
 ---
-title: WebGPU Audio WebWorker Example
-sidebar_position: 1
+title: Worklet/Worker Passthrough
+sidebar_position: 2
 ---
 
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import WebGpuAudioWorker from "../../src/components/WebGpuAudioWorker";
+import WorkletWorker from "../../src/components/WorkletWorker";
 
 export default function WebGpuWorker() {
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
-      {() => <WebGpuAudioWorker/>}
+      {() => <WorkletWorker />}
     </BrowserOnly>
   )
 }

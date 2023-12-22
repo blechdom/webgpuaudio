@@ -1,15 +1,15 @@
 ---
-title: WebGPU Audio WebWorker Example
-sidebar_position: 1
+title: WebGPU Audio WebWorker Stream
+sidebar_position: 3
 ---
 
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import WebGpuAudioWorker from "../../src/components/WebGpuAudioWorker";
+import WebGpuWorkerStream from "../../src/components/WebGpuWorkerStream";
 
 export default function WebGpuWorker() {
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
-      {() => <WebGpuAudioWorker/>}
+      {() => <WebGpuWorkerStream/>}
     </BrowserOnly>
   )
 }

@@ -24,13 +24,14 @@
     "@webgpu/types": "^0.1.40",
     "clsx": "^2.0.0",
     "leva": "^0.9.35",
+    "null-loader": "^4.0.1",
     "prism-react-renderer": "^2.3.0",
     "raw-loader": "^4.0.2",
     "react": "^18.0.0",
     "react-dat-gui": "^4.1.1",
     "react-dom": "^18.0.0",
     "wgpu-matrix": "^2.5.1",
-    "worker-loader": "^3.0.8"
+    "worker-loader": "3.0.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.0.1",
