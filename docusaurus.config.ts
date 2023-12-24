@@ -112,12 +112,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-    },
-    scripts: [{
-      src: `/scripts/coi-serviceworker.js`,
-      type: 'text/javascript',
-      defer: true,
-    }],
+    }
   } satisfies Preset.ThemeConfig,
 };
 
