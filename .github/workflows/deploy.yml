@@ -27,6 +27,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
-
-      - name: Deploy to custom domain
-        run: echo 'www.webgpuaudio.com' > ./build/CNAME && gh-pages -d build"
