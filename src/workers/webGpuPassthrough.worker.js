@@ -45,13 +45,11 @@ self.addEventListener('message', async(ev) => {
       while (true) {
 
         if (Atomics.wait(atomicState, 0, 1) === 'ok') {
-          console.log("atomics wait")
           const processStart = performance.now();
           const callbackInterval = processStart - lastCallback;
           lastCallback = processStart;
           timeElapsed += callbackInterval;
 
-          console.log("processStart ", processStart);
           // Processes "frames" from inputQueue and pass the result to outputQueue.
           await processAudio();
 
@@ -71,14 +69,12 @@ self.addEventListener('message', async(ev) => {
 
           Atomics.store(atomicState, 0, 0);
         }
-        console.log("atomics wait failed");
       }
     }
   }
 });
 
 async function initWebGpu() {
-  console.log("initWebGpu");
   chunkBufferSize = FRAME_SIZE * Float32Array.BYTES_PER_ELEMENT;
   const adapter = await navigator.gpu.requestAdapter();
   device = await adapter.requestDevice();
@@ -115,13 +111,10 @@ async function initWebGpu() {
 }
 
 async function processAudio() {
-  console.log("process audio");
   if (!inputQueue.pull([inputBuffer], FRAME_SIZE)) {
     console.error('[worker.js] Pulling from inputQueue failed.');
     return;
   }
-
-  console.log("inputBuffer ", inputBuffer);
 
   const outputBuffer = await processByGpu(inputBuffer);
 
@@ -133,9 +126,6 @@ async function processAudio() {
 
 //async function run(chunkDurationInSeconds, code, workgroupSize = 64, sampleRate = 48000, nextChunkOffset = 0, entryPoint = "synthesize",) {
 async function processByGpu(inputBufferToProcess) {
-    //const arrayBuffer = gpuInputBuffer.getMappedRange();
-    //new Float32Array(arrayBuffer).set(inputBufferToProcess);
-    //gpuInputBuffer.unmap();
     device.queue.writeBuffer(gpuInputBuffer, 0, new Float32Array(inputBufferToProcess));
 
     const commandEncoder = device.createCommandEncoder();
@@ -154,6 +144,5 @@ async function processByGpu(inputBufferToProcess) {
     const chunkData = new Float32Array(FRAME_SIZE);
     chunkData.set(new Float32Array(chunkMapBuffer.getMappedRange()));
     chunkMapBuffer.unmap();
-    console.log("chunkData ", chunkData);
     return chunkData;
 }
