@@ -2,6 +2,13 @@
 title: AudioWorklet WebWorker WebGPU Passthrough
 sidebar_position: 3
 ---
+import Head from '@docusaurus/Head';
+
+<Head>
+  <script src="/scripts/coi-serviceworker.js"></script>
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp"/>
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin"/>
+</Head>
 
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import WorkletWorkerWebGpu from "../../src/components/WorkletWorkerWebGpu";

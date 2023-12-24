@@ -56,14 +56,6 @@ const FeatureList: FeatureItem[] = [
       </>
     ),
   },
-  {
-    title: 'ringbuf.js',
-    description: (
-      <>
-        ringbuf.js is a JavaScript library for creating ring buffers.
-      </>
-    ),
-  },
 ];
 
 function Feature({title, description}: FeatureItem) {
