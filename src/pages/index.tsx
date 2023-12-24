@@ -29,6 +29,7 @@ export default function Home(): JSX.Element {
       title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />">
       <Head>
+        <script src="/scripts/coi-serviceworker.js"></script>
         <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp"/>
         <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin"/>
       </Head>
