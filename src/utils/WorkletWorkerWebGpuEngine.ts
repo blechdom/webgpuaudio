@@ -1,4 +1,4 @@
-import FreeQueue from './free-queue.js';
+import FreeQueue from './free-queue-webgpu.js';
 import { QUEUE_SIZE } from './constants.ts';
 
 export default class WorkletWorkerEngine {
@@ -10,13 +10,15 @@ export default class WorkletWorkerEngine {
   public inputQueue: any;
   public outputQueue: any;
   public atomicState: Int32Array;
-  public passthroughWorker: Worker | undefined;
+  public webGpuPassthroughWorker: Worker | undefined;
   public chunkData: Float32Array | undefined;
   public code: string;
   public workgroupSize: number;
 
-  constructor() {
-    this.passthroughWorker = new Worker(new URL('../workers/passthrough.worker.js', import.meta.url), {type: "module"});
+  constructor(code: string, workgroupSize: number) {
+    this.webGpuPassthroughWorker = new Worker(new URL('../workers/webGpuPassthrough.worker.js', import.meta.url), {type: "module"});
+    this.code = code;
+    this.workgroupSize = workgroupSize;
     this.init();
   }
 
@@ -27,7 +29,8 @@ export default class WorkletWorkerEngine {
     this.inputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
-    await this.audioContext.audioWorklet.addModule(new URL('./basic-processor.js', import.meta.url));
+    await this.audioContext.audioWorklet.addModule(new URL('./webgpu-processor.js', import.meta.url));
+    console.log("this.audioContext", this.audioContext);
     const oscillator = new OscillatorNode(this.audioContext);
     const queueData = {
       inputQueue: this.inputQueue,
@@ -35,22 +38,28 @@ export default class WorkletWorkerEngine {
       atomicState: this.atomicState
     }
     const processorNode =
-      new AudioWorkletNode(this.audioContext, 'basic-processor', { processorOptions: queueData });
+      await new AudioWorkletNode(this.audioContext, 'webgpu-processor', {processorOptions: queueData});
     oscillator.connect(processorNode).connect(this.audioContext.destination);
     oscillator.start();
-    this.passthroughWorker.postMessage({
+    this.webGpuPassthroughWorker.postMessage({
       type: 'init',
-      data: queueData
+      data: {
+        queueData,
+        code: this.code,
+        sampleRate: this.sampleRate,
+        workgroupSize: this.workgroupSize
+      }
     });
   }
+
   public async stop() {
     if (this.audioContext) {
       await this.audioContext.suspend();
       await this.audioContext.close();
     }
-    if (this.passthroughWorker) {
-      await this.passthroughWorker.terminate();
-      this.passthroughWorker = undefined;
+    if (this.webGpuPassthroughWorker) {
+      await this.webGpuPassthroughWorker.terminate();
+      this.webGpuPassthroughWorker = undefined;
     }
   }
 }

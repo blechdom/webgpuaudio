@@ -1,6 +1,5 @@
-console.log("in basic-processor.js");
 import FreeQueue from "/scripts/free-queue.js";
-import {FRAME_SIZE, RENDER_QUANTUM} from "/scripts/constants.js";
+import { FRAME_SIZE, RENDER_QUANTUM } from "/scripts/constants.js";
 
 /**
  * A simple AudioWorkletProcessor node.
