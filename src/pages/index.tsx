@@ -3,6 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
+import Head from '@docusaurus/Head';
 
 import styles from './index.module.css';
 
@@ -26,6 +27,11 @@ export default function Home(): JSX.Element {
     <Layout
       title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />">
+      <Head>
+        <script src="coi-serviceworker.js"></script>
+        <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp"/>
+        <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin"/>
+      </Head>
       <HomepageHeader />
       <main>
         <HomepageFeatures />
