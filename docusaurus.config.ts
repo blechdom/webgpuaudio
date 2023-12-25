@@ -28,14 +28,14 @@ const config: Config = {
         name: "worker friendly theme",
         configureWebpack(config, isServer) {
           return {
-            /*devServer: {
+            devServer: {
               headers: () => {
                 return [
                   {key: 'Cross-Origin-Embedder-Policy', value: 'require-corp'},
                   {key: 'Cross-Origin-Opener-Policy', value: 'same-origin'},
                 ];
               }
-            },*/
+            },
             resolveLoader: {
               alias: isServer ? {"worker-loader": require.resolve("null-loader")} : {},
             },
