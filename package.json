@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "3.0.1",
+    "@docusaurus/plugin-pwa": "^3.0.1",
     "@docusaurus/preset-classic": "3.0.1",
     "@docusaurus/theme-live-codeblock": "^3.0.1",
     "@iizukak/codemirror-lang-wgsl": "^0.3.0",

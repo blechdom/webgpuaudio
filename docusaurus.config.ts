@@ -59,10 +59,33 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  scripts: [
+  /*scripts: [
     '/scripts/custom.js'
-  ],
-
+  ],*/
+    plugins: [
+      [
+        '@docusaurus/plugin-pwa',
+        {
+          debug: true,
+          /*offlineModeActivationStrategies: [
+            'appInstalled',
+            'standalone',
+            'queryString',
+          ],*/
+          //swRegister: 'coi-serviceworker',
+          swCustom: require.resolve('./static/coi-serviceworker.js'),
+          swRegister: require.resolve('./static/coi-serviceworker.js'),
+           /*
+          pwaHead: [
+            {
+              tagName: 'link',
+              rel: 'manifest',
+              href: '/manifest.json', // your PWA manifest
+            },
+          ],*/
+        },
+      ],
+    ],
   themeConfig: {
     image: 'img/tolerance_0.PNG',
     announcementBar: {
