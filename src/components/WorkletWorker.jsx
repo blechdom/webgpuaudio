@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import {Leva, useControls, button} from 'leva';
 import WorkletWorkerEngine from '../utils/WorkletWorkerEngine.ts';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import Head from '@docusaurus/Head';
 
 export default function WorkletWorker() {
   return (
     <>
       <Head>
-        <script src="/coi-serviceworker.js"></script>
+        {ExecutionEnvironment.canUseDOM && <script src="/coi-serviceworker.js"></script> }
       </Head>
       <WorkletWorkerAfterHead />
     </>
@@ -20,7 +21,7 @@ function WorkletWorkerAfterHead() {
   const [engine, setEngine] = React.useState(undefined);
 
   useEffect(() => {
-    console.log("coi", self.crossOriginIsolated);
+    //console.log("coi-enabled", self.crossOriginIsolated);
     return () => {
       stopMakingSound();
     }

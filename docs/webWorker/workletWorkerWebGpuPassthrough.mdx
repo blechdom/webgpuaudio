@@ -6,7 +6,7 @@ sidebar_position: 3
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import WorkletWorkerWebGpu from "../../src/components/WorkletWorkerWebGpu";
 
-export default function WebGpuWorker() {
+export default function WebGpuWorkerAfterHead() {
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
       {() => <WorkletWorkerWebGpu />}

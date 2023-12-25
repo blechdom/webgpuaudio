@@ -4,8 +4,20 @@ import CodeMirror from '@uiw/react-codemirror';
 import {wgsl} from "@iizukak/codemirror-lang-wgsl";
 import {Leva, useControls, button} from 'leva';
 import WorkletWorkerWebGpuEngine from '../../src/utils/WorkletWorkerWebGpuEngine.ts';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import Head from '@docusaurus/Head';
 
 export default function WorkletWorkerWebGpu() {
+  return (
+    <>
+      <Head>
+        {ExecutionEnvironment.canUseDOM && <script src="/coi-serviceworker.js"></script>}
+      </Head>
+      <WorkletWorkerWebGpuAfterHead />
+    </>
+  );
+}
+function WorkletWorkerWebGpuAfterHead() {
   const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
   const [playing, setPlaying] = React.useState(false);
   const [code, setCode] = React.useState(passthroughShader);
