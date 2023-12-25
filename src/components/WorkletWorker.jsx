@@ -5,7 +5,7 @@ import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import Head from '@docusaurus/Head';
 
 export default function WorkletWorker() {
-/*  return (
+ return (
     <>
       <Head>
         {ExecutionEnvironment.canUseDOM && <script src="/coi-serviceworker.js"></script> }
@@ -16,13 +16,17 @@ export default function WorkletWorker() {
 }
 
 function WorkletWorkerAfterHead() {
-*/
+
   const [playing, setPlaying] = React.useState(false);
   const [engine, setEngine] = React.useState(undefined);
 
   useEffect(() => {
     //console.log("coi-enabled", self.crossOriginIsolated);
     return () => {
+      console.log(ExecutionEnvironment.canUseDOM && window.crossOriginIsolated);
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        console.log(registrations);
+      });
       stopMakingSound();
     }
   }, []);
