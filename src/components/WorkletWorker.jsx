@@ -21,12 +21,11 @@ function WorkletWorkerAfterHead() {*/
   const [engine, setEngine] = React.useState(undefined);
 
   useEffect(() => {
-    //console.log("coi-enabled", self.crossOriginIsolated);
-    return () => {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
+    /*navigator.serviceWorker.getRegistrations().then(registrations => {
         console.log(registrations);
         console.log(ExecutionEnvironment.canUseDOM && window.crossOriginIsolated);
-      });
+      });*/
+    return () => {
       stopMakingSound();
     }
   }, []);

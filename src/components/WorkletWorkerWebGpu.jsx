@@ -24,11 +24,11 @@ function WorkletWorkerWebGpuAfterHead() {*/
   const [engine, setEngine] = React.useState(undefined);
 
   useEffect(() => {
-    return () => {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
+    /*navigator.serviceWorker.getRegistrations().then(registrations => {
         console.log(registrations);
         console.log(ExecutionEnvironment.canUseDOM && window.crossOriginIsolated);
-      });
+      });*/
+    return () => {
       stopMakingSound();
     }
   }, []);
