@@ -30,4 +30,4 @@ jobs:
           aws-region: us-west-1
 
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./build/ s3://webgpuaudio.com --delete
+        run: aws s3 sync ./build/ s3://www.webgpusound.com --delete
