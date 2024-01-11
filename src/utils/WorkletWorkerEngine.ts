@@ -1,5 +1,5 @@
 import FreeQueue from './free-queue.js';
-import { QUEUE_SIZE } from './constants.ts';
+import { QUEUE_SIZE } from './constants.js';
 
 export default class WorkletWorkerEngine {
   public audioContext: AudioContext | undefined;
@@ -27,7 +27,9 @@ export default class WorkletWorkerEngine {
     this.inputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
-    await this.audioContext.audioWorklet.addModule(new URL('./basic-processor.js', import.meta.url));
+    console.log("atomicstate ", this.atomicState);
+    await this.audioContext.audioWorklet.addModule('/scripts/basic-processor.js');
+    console.log("this.audioContext", this.audioContext);
     const oscillator = new OscillatorNode(this.audioContext);
     const queueData = {
       inputQueue: this.inputQueue,

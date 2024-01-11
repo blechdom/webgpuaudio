@@ -1,5 +1,5 @@
-import FreeQueue from "/scripts/free-queue-webgpu.js";
-import { FRAME_SIZE } from "/scripts/constants.js";
+import FreeQueue from "../utils/free-queue-webgpu.js";
+import { FRAME_SIZE } from "../utils/constants.js";
 
 //audio vars
 let inputQueue = null;

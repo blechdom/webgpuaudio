@@ -1,5 +1,5 @@
-import FreeQueue from "/scripts/free-queue.js";
-import { FRAME_SIZE } from "/scripts/constants.js";
+import FreeQueue from "../utils/free-queue.js";
+import { FRAME_SIZE } from "../utils/constants.js";
 
 self.addEventListener('message', async(ev) => {
   switch (ev.data.type) {

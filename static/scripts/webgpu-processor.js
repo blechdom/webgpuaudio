@@ -1,11 +1,11 @@
-import FreeQueue from '/scripts/free-queue-webgpu.js';
-import {FRAME_SIZE, RENDER_QUANTUM} from "/scripts/constants.js";
+import FreeQueue from './free-queue-webgpu.js';
+import {FRAME_SIZE, RENDER_QUANTUM} from "./constants.js";
 
 const ExpectedPrimingCount = FRAME_SIZE / RENDER_QUANTUM;
 
 class WebGpuProcessor extends AudioWorkletProcessor {
   /**
-   * Constructor to initialize, input and output FreeQueue instances
+   * Constructor to initialize, input and output FreeQueueWorker instances
    * and atomicState to synchronise Worker with AudioWorklet
    * @param {Object} options AudioWorkletProcessor options
    *    to initialize inputQueue, outputQueue and atomicState

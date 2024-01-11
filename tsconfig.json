@@ -5,6 +5,7 @@
     "downlevelIteration": true,
     "target": "es2015",
     "noImplicitUseStrict": true,
+    "ignoreDeprecations": "5.0",
     "allowImportingTsExtensions": true,
   },
   "typeRoots": [
