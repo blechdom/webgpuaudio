@@ -15,13 +15,12 @@ class BasicProcessor extends AudioWorkletProcessor {
    */
   constructor(options) {
     super();
-
+    console.log("in basic processor.js in static")
     this.inputQueue = options.processorOptions.inputQueue;
     this.outputQueue = options.processorOptions.outputQueue;
     this.atomicState = options.processorOptions.atomicState;
     Object.setPrototypeOf(this.inputQueue, FreeQueue.prototype);
     Object.setPrototypeOf(this.outputQueue, FreeQueue.prototype);
-    console.log("in basic")
   }
 
   process(inputs, outputs) {

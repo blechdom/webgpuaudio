@@ -46,6 +46,7 @@ class FreeQueue {
      * when full. See Tim Blechmann's |boost::lockfree::spsc_queue|
      * implementation.
      */
+    console.log("free-queue.js in utils");
     this.bufferLength = size + 1;
     this.channelCount = channelCount;
     this.channelData = [];

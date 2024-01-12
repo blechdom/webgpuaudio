@@ -21,6 +21,7 @@ export default class WorkletWorkerEngine {
   }
 
   async init() {
+    console.log("init worklet-Worker-Engine.ts")
     this.audioContext = new AudioContext();
     this.sampleRate = this.audioContext.sampleRate;
 
