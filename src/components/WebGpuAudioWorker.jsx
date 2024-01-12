@@ -1,15 +1,15 @@
-import GPUWorker from 'worker-loader!../../src/workers/webGpuAudio.worker.js';
+import GPUWorker from 'worker-loader!../workers/webGpuAudio.worker.js';
 import React, {useCallback, useEffect} from 'react';
-import sineShader from '!!raw-loader!../../src/shaders/sine.wgsl';
-import triangleShader from '!!raw-loader!../../src/shaders/triangle.wgsl';
-import squareShader from '!!raw-loader!../../src/shaders/square.wgsl';
-import sawtoothShader from '!!raw-loader!../../src/shaders/sawtooth.wgsl';
-import globalIdXShader from '!!raw-loader!../../src/shaders/globalIdX.wgsl';
-import timeShader from '!!raw-loader!../../src/shaders/time.wgsl';
+import sineShader from '!!raw-loader!../shaders/sine.wgsl';
+import triangleShader from '!!raw-loader!../shaders/triangle.wgsl';
+import squareShader from '!!raw-loader!../shaders/square.wgsl';
+import sawtoothShader from '!!raw-loader!../shaders/sawtooth.wgsl';
+import globalIdXShader from '!!raw-loader!../shaders/globalIdX.wgsl';
+import timeShader from '!!raw-loader!../shaders/time.wgsl';
 import CodeMirror from '@uiw/react-codemirror';
 import {wgsl} from "@iizukak/codemirror-lang-wgsl";
 import {Leva, useControls, button} from 'leva';
-import WebGpuAudioWorkerEngine from '../../src/utils/WebGpuAudioWorkerEngine.ts';
+import WebGpuAudioWorkerEngine from '../utils/WebGpuAudioWorkerEngine.ts';
 
 export default function WebGpuAudioWorker() {
   const shaders = ["sine", "triangle", "square", "sawtooth", "globalIdX", "time"];
@@ -128,11 +128,11 @@ export default function WebGpuAudioWorker() {
 
   useEffect(() => {
     if (engine && gpuWorker === undefined) {
-      workerInit(engine);
+      workerInit();
     }
   }, [engine])
 
-  async function workerInit(engine) {
+  async function workerInit() {
     const worker = new GPUWorker({type: "module"});
     setGpuWorker(worker);
     worker.addEventListener('message', async (ev) => {
@@ -163,7 +163,7 @@ export default function WebGpuAudioWorker() {
       </ul>
 
       <Leva flat oneLineLabels/>
-      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange}/>
+      <CodeMirror value={code.toString()} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange}/>
     </>
   );
 }

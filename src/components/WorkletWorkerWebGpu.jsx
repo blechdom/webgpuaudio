@@ -63,7 +63,7 @@ export default function WorkletWorkerWebGpu() {
       </ul>
 
       <Leva flat oneLineLabels/>
-      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange}/>
+      <CodeMirror value={code.toString()} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange}/>
     </>
   );
 }
