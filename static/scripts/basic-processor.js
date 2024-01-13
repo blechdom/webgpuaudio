@@ -1,4 +1,4 @@
-import FreeQueue from "./free-queue.js";
+//import FreeQueue from "./free-queue.js";
 import { FRAME_SIZE, RENDER_QUANTUM } from "./constants.js";
 /**
  * A simple AudioWorkletProcessor node.
@@ -16,11 +16,14 @@ class BasicProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
     console.log("in basic processor.js in static")
-    this.inputQueue = options.processorOptions.inputQueue;
-    this.outputQueue = options.processorOptions.outputQueue;
-    this.atomicState = options.processorOptions.atomicState;
-    Object.setPrototypeOf(this.inputQueue, FreeQueue.prototype);
-    Object.setPrototypeOf(this.outputQueue, FreeQueue.prototype);
+    import("./free-queue.js").then(FreeQueue => {
+      console.log("after free-queue import in audioWorklet")
+      this.inputQueue = options.processorOptions.inputQueue;
+      this.outputQueue = options.processorOptions.outputQueue;
+      this.atomicState = options.processorOptions.atomicState;
+      Object.setPrototypeOf(this.inputQueue, FreeQueue.prototype);
+      Object.setPrototypeOf(this.outputQueue, FreeQueue.prototype);
+    });
   }
 
   process(inputs, outputs) {

@@ -24,9 +24,11 @@ export default class WorkletWorkerEngine {
     console.log("init worklet-Worker-Engine.ts")
     this.audioContext = new AudioContext();
     this.sampleRate = this.audioContext.sampleRate;
-
+    console.log('before first Free queue input assignment');
     this.inputQueue = await new FreeQueue(QUEUE_SIZE, 1);
+    console.log('before first Free queue output assignment');
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
+    console.log('before first Free queue atomic state');
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
     console.log("atomicstate ", this.atomicState);
     await this.audioContext.audioWorklet.addModule('/scripts/basic-processor.js');
