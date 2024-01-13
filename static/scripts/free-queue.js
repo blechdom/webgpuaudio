@@ -15,7 +15,7 @@
  * worker renders audio data to fill in the queue.
  */
 
-class FreeQueue {
+export class FreeQueue {
 
   /**
    * An index set for shared state fields. Requires atomic access.
@@ -234,5 +234,3 @@ class FreeQueue {
     Atomics.store(this.states, this.States.WRITE, 0);
   }
 }
-
-export default FreeQueue;
