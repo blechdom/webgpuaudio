@@ -43,9 +43,7 @@ export default function WorkletWorker() {
   return (
     <>
       <ul>
-        <li>Web Audio is heard after passing through AudioWorklet and a WebWorker.</li>
-        <li>Next, the audio will be passed from the WebWorker to WebGPU and back again, before returning to the AudioWorklet and then to WebAudio.
-        </li>
+        <li>Web Audio is heard after passing through a WebWorker and AudioWorklet using Free-Queue.</li>
       </ul>
 
       <Leva flat oneLineLabels/>

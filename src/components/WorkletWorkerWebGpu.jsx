@@ -58,7 +58,9 @@ export default function WorkletWorkerWebGpu() {
   return (
     <>
       <ul>
-        <li>Web Audio is heard after passing through AudioWorklet, a WebWorker, and WebGPU.</li>
+        <li>Web Audio is heard after passing through a WebWorker, an AudioWorklet, and WebGPU.</li>
+        <li>I have 2 laptops. In Chrome, this demo sounds fine on my ASUS Rog Zephyrus with NVIDIA GPU, but it sounds terrible on my Dell with NVIDIA Ampere GPU. Still trying to understand the differences.</li>
+        <li>Check out what GPU you are running on the home page <a href={"https://www.webgpusound.com"}>webgpusound.com</a></li>
         <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
       </ul>
 

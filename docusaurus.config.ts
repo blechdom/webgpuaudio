@@ -6,8 +6,8 @@ const organizationName = "blechdom";
 const projectName = "webgpuaudio";
 
 const config: Config = {
-  title: 'WebGPU Audio',
-  tagline: 'Exploring Audio with WebGPU',
+  title: 'WebGPU Sound',
+  tagline: 'Exploring Sound with WebGPU',
   favicon: 'img/favicon.ico',
   url: `https://${organizationName}.github.io`,
   baseUrl: `/`,
@@ -68,7 +68,7 @@ const config: Config = {
       isCloseable: false
     },
     navbar: {
-      title: 'WebGPU Audio',
+      title: 'WebGPU Sound',
       logo: {
         alt: 'WebGPU Audio Logo',
         src: 'img/tolerance_0.PNG',
