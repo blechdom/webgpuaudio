@@ -18,7 +18,7 @@ export default class WorkletWorkerEngine {
   public workgroupSize: number;
 
   constructor() {
-    this.passthroughWorker = new WorkletWorker({type: "module"});//new Worker(new URL('@site/static/workers/passthrough.worker.js', import.meta.url), {type: "module"});
+    this.passthroughWorker = new WorkletWorker({type: "module"});
     this.init();
   }
 
@@ -29,6 +29,7 @@ export default class WorkletWorkerEngine {
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
     await this.audioContext.audioWorklet.addModule('/scripts/basic-processor.js');
+
     const oscillator = new OscillatorNode(this.audioContext);
     const queueData = {
       inputQueue: this.inputQueue,

@@ -1,5 +1,5 @@
 /**
- * A shared storage for FreeQueueWorker operation backed by SharedArrayBuffer.
+ * A shared storage for FreeQueue operation backed by SharedArrayBuffer.
  *
  * @typedef SharedRingBuffer
  * @property {Uint32Array} states Backed by SharedArrayBuffer.
@@ -61,9 +61,9 @@ export class FreeQueue {
   }
 
   /**
-   * Helper function for creating FreeQueueWorker from pointers.
+   * Helper function for creating FreeQueue from pointers.
    * @param {FreeQueuePointers} queuePointers
-   * An object containing various pointers required to create FreeQueueWorker
+   * An object containing various pointers required to create FreeQueue
    *
    * interface FreeQueuePointers {
    *   memory: WebAssembly.Memory;   // Reference to WebAssembly Memory

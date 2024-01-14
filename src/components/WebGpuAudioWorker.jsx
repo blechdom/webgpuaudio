@@ -22,7 +22,7 @@ export default function WebGpuAudioWorker() {
 
 
   useEffect(() => {
-    return () => {a
+    return () => {
       stopMakingSound();
     }
   }, []);

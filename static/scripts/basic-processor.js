@@ -8,18 +8,20 @@ import { FRAME_SIZE, RENDER_QUANTUM } from "./constants.js";
  */
 class BasicProcessor extends AudioWorkletProcessor {
   /**
-   * Constructor to initialize, input and output FreeQueueWorker instances
+   * Constructor to initialize, input and output FreeQueue instances
    * and atomicState to synchronise Worker with AudioWorklet
    * @param {Object} options AudioWorkletProcessor options
    *    to initialize inputQueue, outputQueue and atomicState
    */
   constructor(options) {
     super();
+
     this.inputQueue = options.processorOptions.inputQueue;
     this.outputQueue = options.processorOptions.outputQueue;
     this.atomicState = options.processorOptions.atomicState;
     Object.setPrototypeOf(this.inputQueue, FreeQueue.prototype);
     Object.setPrototypeOf(this.outputQueue, FreeQueue.prototype);
+
   }
 
   process(inputs, outputs) {

@@ -1,5 +1,5 @@
 /**
- * A shared storage for FreeQueueWorker operation backed by SharedArrayBuffer.
+ * A shared storage for FreeQueue operation backed by SharedArrayBuffer.
  *
  * @typedef SharedRingBuffer
  * @property {Uint32Array} states Backed by SharedArrayBuffer.
@@ -29,7 +29,7 @@ export class FreeQueue {
   }
 
   /**
-   * FreeQueueWorker constructor. A shared buffer created by this constuctor
+   * FreeQueue constructor. A shared buffer created by this constuctor
    * will be shared between two threads.
    *
    * @param {number} size Frame buffer length.

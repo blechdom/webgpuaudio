@@ -5,7 +5,7 @@ const ExpectedPrimingCount = FRAME_SIZE / RENDER_QUANTUM;
 
 class WebGpuProcessor extends AudioWorkletProcessor {
   /**
-   * Constructor to initialize, input and output FreeQueueWorker instances
+   * Constructor to initialize, input and output FreeQueue instances
    * and atomicState to synchronise Worker with AudioWorklet
    * @param {Object} options AudioWorkletProcessor options
    *    to initialize inputQueue, outputQueue and atomicState

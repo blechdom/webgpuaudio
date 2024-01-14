@@ -3,12 +3,10 @@ import {Leva, useControls, button} from 'leva';
 import WorkletWorkerEngine from '../utils/WorkletWorkerEngine.ts';
 
 export default function WorkletWorker() {
-
   const [playing, setPlaying] = React.useState(false);
   const [engine, setEngine] = React.useState(undefined);
 
   useEffect(() => {
-    console.log("loading workletWorker.jsx");
     return () => {
       stopMakingSound();
     }
