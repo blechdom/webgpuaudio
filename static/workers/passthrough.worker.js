@@ -8,11 +8,8 @@ self.addEventListener('message', async(ev) => {
       Object.setPrototypeOf(inputQueue, FreeQueue.prototype);
       Object.setPrototypeOf(outputQueue, FreeQueue.prototype);
 
-      // buffer for storing data pulled out from queue.
       const input = new Float32Array(FRAME_SIZE);
-      // loop for processing data.
       while (Atomics.wait(atomicState, 0, 0) === 'ok') {
-        // pull data out from inputQueue.
         const didPull = inputQueue.pull([input], FRAME_SIZE);
 
         if (didPull) {

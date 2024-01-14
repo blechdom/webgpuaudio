@@ -179,14 +179,14 @@ class FreeQueue {
    * Helper function for debugging.
    * Prints currently available read and write.
    */
-  printAvailableReadAndWrite() {
+  /*printAvailableReadAndWrite() {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
     console.log(this, {
       availableRead: this._getAvailableRead(currentRead, currentWrite),
       availableWrite: this._getAvailableWrite(currentRead, currentWrite),
     });
-  }
+  }*/
 
   /**
    *

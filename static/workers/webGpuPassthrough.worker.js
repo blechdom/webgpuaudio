@@ -60,10 +60,10 @@ self.addEventListener('message', async(ev) => {
 
           // Throttle the log by 1 second.
           if (timeElapsed >= 1000) {
-            console.log(
+           /* console.log(
               `[worker.js] process() = ${timeSpent.toFixed(3)}ms : ` +
               `avg = ${averageTimeSpent.toFixed(3)}ms : ` +
-              `callback interval = ${(callbackInterval).toFixed(3)}ms`);
+              `callback interval = ${(callbackInterval).toFixed(3)}ms`);*/
             timeElapsed -= 1000;
           }
 

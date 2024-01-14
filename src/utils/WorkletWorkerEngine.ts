@@ -1,4 +1,4 @@
-import GPUWorker from 'worker-loader!@site/static/workers/passthrough.worker.js';
+import WorkletWorker from 'worker-loader!@site/static/workers/passthrough.worker.js';
 
 import { FreeQueue } from './free-queue.js';
 import { QUEUE_SIZE } from './constants.js';
@@ -18,7 +18,7 @@ export default class WorkletWorkerEngine {
   public workgroupSize: number;
 
   constructor() {
-    this.passthroughWorker = new GPUWorker({type: "module"});//new Worker(new URL('@site/static/workers/passthrough.worker.js', import.meta.url), {type: "module"});
+    this.passthroughWorker = new WorkletWorker({type: "module"});//new Worker(new URL('@site/static/workers/passthrough.worker.js', import.meta.url), {type: "module"});
     this.init();
   }
 
