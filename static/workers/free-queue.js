@@ -15,7 +15,7 @@
  * worker renders audio data to fill in the queue.
  */
 
-export class FreeQueue {
+class FreeQueue {
 
   /**
    * An index set for shared state fields. Requires atomic access.
@@ -46,7 +46,6 @@ export class FreeQueue {
      * when full. See Tim Blechmann's |boost::lockfree::spsc_queue|
      * implementation.
      */
-    console.log("free-queue.js in utils");
     this.bufferLength = size + 1;
     this.channelCount = channelCount;
     this.channelData = [];

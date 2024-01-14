@@ -1,3 +1,4 @@
+import GPUWorker from 'worker-loader!@site/static/workers/webGpuPassthrough.worker.js';
 import FreeQueue from './free-queue-webgpu.js';
 import { QUEUE_SIZE } from './constants.js';
 
@@ -16,7 +17,7 @@ export default class WorkletWorkerEngine {
   public workgroupSize: number;
 
   constructor(code: string, workgroupSize: number) {
-    this.webGpuPassthroughWorker = new Worker(new URL('../workers/webGpuPassthrough.worker.js', import.meta.url), {type: "module"});
+    this.webGpuPassthroughWorker = new GPUWorker({type: "module"});
     this.code = code;
     this.workgroupSize = workgroupSize;
     this.init();
@@ -25,7 +26,6 @@ export default class WorkletWorkerEngine {
   async init() {
     this.audioContext = new AudioContext();
     this.sampleRate = this.audioContext.sampleRate;
-
     this.inputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));

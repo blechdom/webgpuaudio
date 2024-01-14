@@ -15,7 +15,7 @@
  * worker renders audio data to fill in the queue.
  */
 
-class FreeQueue {
+export class FreeQueue {
 
   /**
    * An index set for shared state fields. Requires atomic access.
@@ -228,5 +228,3 @@ class FreeQueue {
     });
   }
 }
-
-export default FreeQueue;

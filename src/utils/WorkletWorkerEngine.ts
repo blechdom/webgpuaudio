@@ -1,4 +1,6 @@
-import FreeQueue from './free-queue.js';
+import GPUWorker from 'worker-loader!@site/static/workers/passthrough.worker.js';
+
+import { FreeQueue } from './free-queue.js';
 import { QUEUE_SIZE } from './constants.js';
 
 export default class WorkletWorkerEngine {
@@ -16,23 +18,17 @@ export default class WorkletWorkerEngine {
   public workgroupSize: number;
 
   constructor() {
-    this.passthroughWorker = new Worker(new URL('../workers/passthrough.worker.js', import.meta.url), {type: "module"});
+    this.passthroughWorker = new GPUWorker({type: "module"});//new Worker(new URL('@site/static/workers/passthrough.worker.js', import.meta.url), {type: "module"});
     this.init();
   }
 
   async init() {
-    console.log("init worklet-Worker-Engine.ts")
     this.audioContext = new AudioContext();
     this.sampleRate = this.audioContext.sampleRate;
-    console.log('before first Free queue input assignment');
     this.inputQueue = await new FreeQueue(QUEUE_SIZE, 1);
-    console.log('before first Free queue output assignment');
     this.outputQueue = await new FreeQueue(QUEUE_SIZE, 1);
-    console.log('before first Free queue atomic state');
     this.atomicState = await new Int32Array(new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT));
-    console.log("atomicstate ", this.atomicState);
     await this.audioContext.audioWorklet.addModule('/scripts/basic-processor.js');
-    console.log("this.audioContext", this.audioContext);
     const oscillator = new OscillatorNode(this.audioContext);
     const queueData = {
       inputQueue: this.inputQueue,

@@ -1,4 +1,4 @@
-import FreeQueue from './free-queue-webgpu.js';
+import { FreeQueue } from './free-queue-webgpu.js';
 import {FRAME_SIZE, RENDER_QUANTUM} from "./constants.js";
 
 const ExpectedPrimingCount = FRAME_SIZE / RENDER_QUANTUM;

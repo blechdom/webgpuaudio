@@ -15,8 +15,6 @@ class BasicProcessor extends AudioWorkletProcessor {
    */
   constructor(options) {
     super();
-    console.log("in basic processor.js in static")
-    console.log("after free-queue import in audioWorklet")
     this.inputQueue = options.processorOptions.inputQueue;
     this.outputQueue = options.processorOptions.outputQueue;
     this.atomicState = options.processorOptions.atomicState;

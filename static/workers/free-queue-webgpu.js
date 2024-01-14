@@ -15,7 +15,7 @@
  * worker renders audio data to fill in the queue.
  */
 
-export class FreeQueue {
+class FreeQueue {
 
   /**
    * An index set for shared state fields. Requires atomic access.
@@ -46,7 +46,6 @@ export class FreeQueue {
      * when full. See Tim Blechmann's |boost::lockfree::spsc_queue|
      * implementation.
      */
-    console.log("free-queue.js in utils");
     this.bufferLength = size + 1;
     this.channelCount = channelCount;
     this.channelData = [];
@@ -114,9 +113,10 @@ export class FreeQueue {
   push(input, blockLength) {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
-    if (this._getAvailableWrite(currentRead, currentWrite) < blockLength) {
+   /* if (this._getAvailableWrite(currentRead, currentWrite) < blockLength) {
+      this.printAvailableReadAndWrite();
       return false;
-    }
+    }*/
     let nextWrite = currentWrite + blockLength;
     if (this.bufferLength < nextWrite) {
       nextWrite -= this.bufferLength;
@@ -150,9 +150,10 @@ export class FreeQueue {
   pull(output, blockLength) {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
-    if (this._getAvailableRead(currentRead, currentWrite) < blockLength) {
+    /*if (this._getAvailableRead(currentRead, currentWrite) < blockLength) {
+      this.printAvailableReadAndWrite();
       return false;
-    }
+    }*/
     let nextRead = currentRead + blockLength;
     if (this.bufferLength < nextRead) {
       nextRead -= this.bufferLength;
@@ -177,53 +178,36 @@ export class FreeQueue {
   }
 
   /**
-   * Helper function for debugging.
-   * Prints currently available read and write.
-   */
-  printAvailableReadAndWrite() {
-    const currentRead = Atomics.load(this.states, this.States.READ);
-    const currentWrite = Atomics.load(this.states, this.States.WRITE);
-    console.log(this, {
-      availableRead: this._getAvailableRead(currentRead, currentWrite),
-      availableWrite: this._getAvailableWrite(currentRead, currentWrite),
-    });
-  }
-
-  /**
-   *
-   * @returns {number} number of samples available for read
-   */
-  getAvailableSamples() {
-    const currentRead = Atomics.load(this.states, this.States.READ);
-    const currentWrite = Atomics.load(this.states, this.States.WRITE);
-    return this._getAvailableRead(currentRead, currentWrite);
-  }
-
-  /**
-   *
-   * @param {number} size
-   * @returns boolean. if frame of given size is available or not.
-   */
-  isFrameAvailable(size) {
-    return this.getAvailableSamples() >= size;
-  }
-
-  /**
    * @return {number}
    */
   getBufferLength() {
     return this.bufferLength - 1;
   }
 
-  _getAvailableWrite(readIndex, writeIndex) {
-    if (writeIndex >= readIndex)
-      return this.bufferLength - writeIndex + readIndex - 1;
-    return readIndex - writeIndex - 1;
+  hasEnoughFramesFor(frameLength) {
+    const currentRead = Atomics.load(this.states, this.States.READ);
+    const currentWrite = Atomics.load(this.states, this.States.WRITE);
+    return this._getAvailableRead(currentRead, currentWrite) >= frameLength;
   }
 
+  hasEnoughSpaceFor(frameLength) {
+    const currentRead = Atomics.load(this.states, this.States.READ);
+    const currentWrite = Atomics.load(this.states, this.States.WRITE);
+    return this._getAvailableWrite(currentRead, currentWrite) >= frameLength;
+  }
+
+  // Returns the number of writable space.
+  _getAvailableWrite(readIndex, writeIndex) {
+    return (writeIndex >= readIndex)
+      ? this.bufferLength - writeIndex + readIndex - 1
+      : readIndex - writeIndex - 1;
+  }
+
+  // Returns the number of readable frames.
   _getAvailableRead(readIndex, writeIndex) {
-    if (writeIndex >= readIndex) return writeIndex - readIndex;
-    return writeIndex + this.bufferLength - readIndex;
+    return (writeIndex >= readIndex)
+      ? writeIndex - readIndex
+      : writeIndex + this.bufferLength - readIndex;
   }
 
   _reset() {
@@ -232,5 +216,15 @@ export class FreeQueue {
     }
     Atomics.store(this.states, this.States.READ, 0);
     Atomics.store(this.states, this.States.WRITE, 0);
+  }
+
+  // Helper function for debugging; Prints currently available read and write.
+  printAvailableReadAndWrite() {
+    const currentRead = Atomics.load(this.states, this.States.READ);
+    const currentWrite = Atomics.load(this.states, this.States.WRITE);
+    console.log(this, {
+      availableRead: this._getAvailableRead(currentRead, currentWrite),
+      availableWrite: this._getAvailableWrite(currentRead, currentWrite),
+    });
   }
 }

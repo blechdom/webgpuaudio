@@ -1,4 +1,4 @@
-import GPUWorker from 'worker-loader!../workers/webGpuAudio.worker.js';
+import GPUWorker from 'worker-loader!@site/static/workers/webGpuAudio.worker.js';
 import React, {useCallback, useEffect} from 'react';
 import sineShader from '!!raw-loader!../shaders/sine.wgsl';
 import triangleShader from '!!raw-loader!../shaders/triangle.wgsl';
