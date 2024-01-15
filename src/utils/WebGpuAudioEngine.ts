@@ -83,7 +83,6 @@ export default class WebGpuAudioEngine {
     if (this.startTime === undefined) {
       this.startTime = performance.now() / 1000.0;
     }
-    console.log("this.nextChunkOffset", this.nextChunkOffset);
     const bufferedSeconds = (this.startTime + this.nextChunkOffset) - (performance.now() / 1000.0);
     const numBufferedChunks = Math.floor(bufferedSeconds / this.chunkDurationInSeconds);
 
