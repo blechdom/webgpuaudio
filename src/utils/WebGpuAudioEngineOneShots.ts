@@ -71,7 +71,6 @@ export default class WebGpuAudioEngine {
   public playSound(freq: number,
                    volume: number,
                    soundType: number) {
-    console.log("playSound with sound type ", soundType);
     (async () => {
       await this.createSoundChunk(freq, volume, soundType);
     })();

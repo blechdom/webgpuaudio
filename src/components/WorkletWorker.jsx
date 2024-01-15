@@ -20,7 +20,6 @@ export default function WorkletWorker() {
 
   useEffect(() => {
     if (playing) {
-      console.log("playing")
       startMakingSound();
     } else {
       stopMakingSound();

@@ -29,19 +29,14 @@ class BasicProcessor extends AudioWorkletProcessor {
     const input = inputs[0];
     const output = outputs[0];
 
-    // Push data from input into inputQueue.
     this.inputQueue.push(input, RENDER_QUANTUM);
-
-    // Try to pull data out of outputQueue and store it in output.
     const didPull = this.outputQueue.pull(output, RENDER_QUANTUM);
     if (!didPull) {
       console.log("failed to pull.");
     }
-
-    // Wake up worker to process a frame of data.
-      if (this.inputQueue.isFrameAvailable(FRAME_SIZE)) {
-        Atomics.notify(this.atomicState, 0, 1);
-      }
+    if (this.inputQueue.isFrameAvailable(FRAME_SIZE)) {
+      Atomics.notify(this.atomicState, 0, 1);
+    }
 
     return true;
   }

@@ -1,18 +1,18 @@
-import GPUWorker from 'worker-loader!@site/static/workers/webGpuPassthrough.worker.js';
+import GPUWorker from 'worker-loader!@site/static/workers/webGpuAudioProcessor.worker.js';
 import FreeQueue from './free-queue-webgpu.js';
 import { QUEUE_SIZE } from './constants.js';
 
-export default class WorkletWorkerWebGpuEngine {
+export default class WebGpuAudioProcessorEngine {
   public audioContext: AudioContext | undefined;
   public inputQueue: any;
   public outputQueue: any;
   public atomicState: Int32Array;
-  public webGpuPassthroughWorker: Worker | undefined;
+  public webGpuAudioProcessorWorker: Worker | undefined;
   public code: string;
   public workgroupSize: number;
 
   constructor(code: string, workgroupSize: number) {
-    this.webGpuPassthroughWorker = new GPUWorker({type: "module"});
+    this.webGpuAudioProcessorWorker = new GPUWorker({type: "module"});
     this.code = code;
     this.workgroupSize = workgroupSize;
     this.init();
@@ -36,7 +36,7 @@ export default class WorkletWorkerWebGpuEngine {
     oscillator.connect(processorNode).connect(this.audioContext.destination);
     oscillator.start();
 
-    this.webGpuPassthroughWorker.postMessage({
+    this.webGpuAudioProcessorWorker.postMessage({
       type: 'init',
       data: {
         queueData,
@@ -46,14 +46,22 @@ export default class WorkletWorkerWebGpuEngine {
     });
   }
 
+  public updateAudioParams(freq: number, volume: number) {
+    this.webGpuAudioProcessorWorker.postMessage({
+      type: 'updateAudioParams',
+      data: new Float32Array([freq, volume])
+    });
+    //this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, waveFormNum]));
+  }
+
   public async stop() {
     if (this.audioContext) {
       await this.audioContext.suspend();
       await this.audioContext.close();
     }
-    if (this.webGpuPassthroughWorker) {
-      await this.webGpuPassthroughWorker.terminate();
-      this.webGpuPassthroughWorker = undefined;
+    if (this.webGpuAudioProcessorWorker) {
+      await this.webGpuAudioProcessorWorker.terminate();
+      this.webGpuAudioProcessorWorker = undefined;
     }
   }
 }
