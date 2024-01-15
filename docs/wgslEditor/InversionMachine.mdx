@@ -101,36 +101,6 @@ export default function WgslAudioEditorWithInputs() {
       max: 2.0,
       step: 0.001
     },
-    noiseTime: {
-      value: 10,
-      min: 0,
-      max: 100,
-      step: 0.001
-    },
-    noiseGain: {
-      value: 4,
-      min: 0.0,
-      max: 20,
-      step: 0.001
-    },
-    alarmTime: {
-      value: 4,
-      min: 1,
-      max: 20,
-      step: 0.001
-    },
-    alarmNoise: {
-      value: 5,
-      min: -6000,
-      max: 6000,
-      step: 0.001
-    },
-    alarmGain: {
-      value: 2,
-      min: 0.0,
-      max: 15,
-      step: 0.001
-    },
     volume: {
       value: 0.15,
       min: 0.0,
@@ -198,9 +168,9 @@ export default function WgslAudioEditorWithInputs() {
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
-      engine.updateAudioParams(new Float32Array([bouncePitch, fractalIterations, noiseTime, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain, noiseGain, alarmTime, alarmNoise, alarmGain]));
+      engine.updateAudioParams(new Float32Array([bouncePitch, fractalIterations, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain]));
     }
-  }, [engine, bouncePitch, fractalIterations, noiseTime, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain, noiseGain, alarmTime, alarmNoise, alarmGain]);
+  }, [engine, bouncePitch, fractalIterations, squelchMod, volume, squelch, squelchSpeed, bounceTime, fractalGain, bounceGain, squelchGain]);
 
 
   return (

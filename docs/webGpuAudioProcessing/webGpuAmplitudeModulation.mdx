@@ -1,0 +1,15 @@
+---
+title: WebGPU Amplitude Modulation
+sidebar_position: 1
+---
+
+import BrowserOnly from "@docusaurus/BrowserOnly";
+import WebGpuAmplitudeModulation from "../../src/components/WebGpuAmplitudeModulation";
+
+export default function WebGpuAmplitudeModulationDoc() {
+  return (
+    <BrowserOnly fallback={<div>Loading...</div>}>
+      {() => <WebGpuAmplitudeModulation />}
+    </BrowserOnly>
+  )
+}

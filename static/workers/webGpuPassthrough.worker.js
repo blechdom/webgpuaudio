@@ -9,7 +9,6 @@ console.log("after importScripts");
 let inputQueue = null;
 let outputQueue = null;
 let atomicState = null;
-//let inputBuffer = null;
 
 //gpu vars
 let device = null;

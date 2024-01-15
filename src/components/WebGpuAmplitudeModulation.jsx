@@ -5,7 +5,7 @@ import {wgsl} from "@iizukak/codemirror-lang-wgsl";
 import {Leva, useControls, button} from 'leva';
 import WorkletWorkerWebGpuEngine from '../utils/WorkletWorkerWebGpuEngine.ts';
 
-export default function WorkletWorkerWebGpu() {
+export default function WebGpuAmplitudeModulation() {
   const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
   const [playing, setPlaying] = React.useState(false);
   const [code, setCode] = React.useState(passthroughShader);

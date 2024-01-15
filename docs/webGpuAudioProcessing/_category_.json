@@ -1,0 +1,8 @@
+{
+  "label": "WebGPU Audio Processing",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Process a real-time input signal with WebGPU"
+  }
+}

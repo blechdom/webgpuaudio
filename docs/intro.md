@@ -13,6 +13,10 @@ Live WGSL editor Examples:
     * [Inversion Machine (NOISE!)](wgslEditor/InversionMachine.mdx)
   * WebWorker WebGPU Samples
     * [WebGPU Audio WebWorker](./webWorker/webGpuAudioWorker)
+    * [AudioWorklet WebWorker Passthrough](./webWorker/workletWorkerPassthrough)
+    * [WebGPU AudioWorklet WebWorker Passthrough](./webWorker/workletWorkerWebGpuPassthrough)
+  * WebGPU Audio Processing
+    * [WebGPU Amplitude Modulation](./webGpuAudioProcessing/webGpuAmplitudeModulation)
 
 # Useful Links
 
