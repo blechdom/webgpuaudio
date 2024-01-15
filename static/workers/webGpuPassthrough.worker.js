@@ -1,11 +1,15 @@
+console.log("webgpuPassthrough.worker.js: load");
+
 importScripts("/workers/free-queue-webgpu.js");
 importScripts("/workers/constants.js");
+
+console.log("after importScripts");
 
 //audio vars
 let inputQueue = null;
 let outputQueue = null;
 let atomicState = null;
-let inputBuffer = null;
+//let inputBuffer = null;
 
 //gpu vars
 let device = null;
@@ -19,21 +23,27 @@ let workgroupSize = null;
 let code = null;
 
 self.addEventListener('message', async(ev) => {
+  console.log("ev.data.type: ", ev.data.type);
   switch (ev.data.type) {
     case 'init': {
       ({inputQueue, outputQueue, atomicState} = ev.data.data.queueData);
       Object.setPrototypeOf(inputQueue, FreeQueue.prototype);
       Object.setPrototypeOf(outputQueue, FreeQueue.prototype);
 
-      inputBuffer = new Float32Array(FRAME_SIZE);
+      const inputBuffer = new Float32Array(FRAME_SIZE);
       workgroupSize = ev.data.data.workgroupSize;
       code = ev.data.data.code;
       await initWebGpu();
-
+      console.log("init webgpu done");
       while (true) {
-
         if (Atomics.wait(atomicState, 0, 1) === 'ok') {
-          await processAudio();
+          const didPull = inputQueue.pull([inputBuffer], FRAME_SIZE);
+
+          if (didPull) {
+            const output = await processByGpu(inputBuffer);
+            outputQueue.push([output], FRAME_SIZE);
+          }
+
           Atomics.store(atomicState, 0, 0);
         }
       }
@@ -75,20 +85,6 @@ async function initWebGpu() {
       { binding: 1, resource: {buffer: chunkBuffer } },
     ]
   });
-}
-
-async function processAudio() {
-  if (!inputQueue.pull([inputBuffer], FRAME_SIZE)) {
-    console.error('[worker.js] Pulling from inputQueue failed.');
-    return;
-  }
-
-  const outputBuffer = await processByGpu(inputBuffer);
-
-  if (!outputQueue.push([outputBuffer], FRAME_SIZE)) {
-    console.error('[worker.js] Pushing to outputQueue failed.');
-    return;
-  }
 }
 
 async function processByGpu(inputBufferToProcess) {

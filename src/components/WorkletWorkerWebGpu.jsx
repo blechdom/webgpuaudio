@@ -30,7 +30,6 @@ export default function WorkletWorkerWebGpu() {
 
   useEffect(() => {
     if (playing) {
-      console.log("playing")
       startMakingSound();
     } else {
       stopMakingSound();

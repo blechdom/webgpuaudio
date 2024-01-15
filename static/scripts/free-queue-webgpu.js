@@ -114,7 +114,6 @@ export class FreeQueue {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
     if (this._getAvailableWrite(currentRead, currentWrite) < blockLength) {
-      //this.printAvailableReadAndWrite();
       return false;
     }
     let nextWrite = currentWrite + blockLength;
@@ -151,7 +150,6 @@ export class FreeQueue {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
     if (this._getAvailableRead(currentRead, currentWrite) < blockLength) {
-      //this.printAvailableReadAndWrite();
       return false;
     }
     let nextRead = currentRead + blockLength;
@@ -188,6 +186,24 @@ export class FreeQueue {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
     return this._getAvailableRead(currentRead, currentWrite) >= frameLength;
+  }
+
+  /**
+   *
+   * @returns {number} number of samples available for read
+   */
+  getAvailableSamples() {
+    const currentRead = Atomics.load(this.states, this.States.READ);
+    const currentWrite = Atomics.load(this.states, this.States.WRITE);
+    return this._getAvailableRead(currentRead, currentWrite);
+  }
+  /**
+   *
+   * @param {number} size
+   * @returns boolean. if frame of given size is available or not.
+   */
+  isFrameAvailable(size) {
+    return this.getAvailableSamples() >= size;
   }
 
   hasEnoughSpaceFor(frameLength) {

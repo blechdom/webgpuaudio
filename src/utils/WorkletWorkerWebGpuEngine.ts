@@ -35,6 +35,7 @@ export default class WorkletWorkerEngine {
       await new AudioWorkletNode(this.audioContext, 'webgpu-processor', {processorOptions: queueData});
     oscillator.connect(processorNode).connect(this.audioContext.destination);
     oscillator.start();
+    console.log("set up audio worklet node", queueData);
 
     this.webGpuPassthroughWorker.postMessage({
       type: 'init',
