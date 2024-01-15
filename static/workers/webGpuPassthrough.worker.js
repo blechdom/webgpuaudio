@@ -6,25 +6,17 @@ let inputQueue = null;
 let outputQueue = null;
 let atomicState = null;
 let inputBuffer = null;
-let sampleRate = null;
 
 //gpu vars
 let device = null;
 let chunkBufferSize = null;
 let gpuInputBuffer = null;
-let gpuOutputBuffer = null;
 let chunkBuffer = null;
 let chunkMapBuffer = null;
 let pipeline = null;
 let bindGroup = null;
 let workgroupSize = null;
 let code = null;
-
-// performance metrics
-let lastCallback = 0;
-let averageTimeSpent = 0;
-let timeElapsed = 0;
-let runningAverageFactor = 1;
 
 self.addEventListener('message', async(ev) => {
   switch (ev.data.type) {
@@ -33,40 +25,15 @@ self.addEventListener('message', async(ev) => {
       Object.setPrototypeOf(inputQueue, FreeQueue.prototype);
       Object.setPrototypeOf(outputQueue, FreeQueue.prototype);
 
-      // buffer for storing data pulled out from queue.
       inputBuffer = new Float32Array(FRAME_SIZE);
-      sampleRate = ev.data.data.sampleRate;
       workgroupSize = ev.data.data.workgroupSize;
       code = ev.data.data.code;
       await initWebGpu();
 
-      runningAverageFactor = sampleRate / FRAME_SIZE;
-
       while (true) {
 
         if (Atomics.wait(atomicState, 0, 1) === 'ok') {
-          const processStart = performance.now();
-          const callbackInterval = processStart - lastCallback;
-          lastCallback = processStart;
-          timeElapsed += callbackInterval;
-
-          // Processes "frames" from inputQueue and pass the result to outputQueue.
           await processAudio();
-
-          // Approximate running average of process() time.
-          const timeSpent = performance.now() - processStart;
-          averageTimeSpent -= averageTimeSpent / runningAverageFactor;
-          averageTimeSpent += timeSpent / runningAverageFactor;
-
-          // Throttle the log by 1 second.
-          if (timeElapsed >= 1000) {
-           /* console.log(
-              `[worker.js] process() = ${timeSpent.toFixed(3)}ms : ` +
-              `avg = ${averageTimeSpent.toFixed(3)}ms : ` +
-              `callback interval = ${(callbackInterval).toFixed(3)}ms`);*/
-            timeElapsed -= 1000;
-          }
-
           Atomics.store(atomicState, 0, 0);
         }
       }
@@ -124,7 +91,6 @@ async function processAudio() {
   }
 }
 
-//async function run(chunkDurationInSeconds, code, workgroupSize = 64, sampleRate = 48000, nextChunkOffset = 0, entryPoint = "synthesize",) {
 async function processByGpu(inputBufferToProcess) {
     device.queue.writeBuffer(gpuInputBuffer, 0, new Float32Array(inputBufferToProcess));
 

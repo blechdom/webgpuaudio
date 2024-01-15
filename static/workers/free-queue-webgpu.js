@@ -1,5 +1,5 @@
 /**
- * A shared storage for FreeQueueWorker operation backed by SharedArrayBuffer.
+ * A shared storage for FreeQueue operation backed by SharedArrayBuffer.
  *
  * @typedef SharedRingBuffer
  * @property {Uint32Array} states Backed by SharedArrayBuffer.
@@ -29,7 +29,7 @@ class FreeQueue {
   }
 
   /**
-   * FreeQueueWorker constructor. A shared buffer created by this constuctor
+   * FreeQueue constructor. A shared buffer created by this constuctor
    * will be shared between two threads.
    *
    * @param {number} size Frame buffer length.
@@ -61,9 +61,9 @@ class FreeQueue {
   }
 
   /**
-   * Helper function for creating FreeQueueWorker from pointers.
+   * Helper function for creating FreeQueue from pointers.
    * @param {FreeQueuePointers} queuePointers
-   * An object containing various pointers required to create FreeQueueWorker
+   * An object containing various pointers required to create FreeQueue
    *
    * interface FreeQueuePointers {
    *   memory: WebAssembly.Memory;   // Reference to WebAssembly Memory
@@ -113,10 +113,10 @@ class FreeQueue {
   push(input, blockLength) {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
-   /* if (this._getAvailableWrite(currentRead, currentWrite) < blockLength) {
+    if (this._getAvailableWrite(currentRead, currentWrite) < blockLength) {
       this.printAvailableReadAndWrite();
       return false;
-    }*/
+    }
     let nextWrite = currentWrite + blockLength;
     if (this.bufferLength < nextWrite) {
       nextWrite -= this.bufferLength;
@@ -150,10 +150,10 @@ class FreeQueue {
   pull(output, blockLength) {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
-    /*if (this._getAvailableRead(currentRead, currentWrite) < blockLength) {
+    if (this._getAvailableRead(currentRead, currentWrite) < blockLength) {
       this.printAvailableReadAndWrite();
       return false;
-    }*/
+    }
     let nextRead = currentRead + blockLength;
     if (this.bufferLength < nextRead) {
       nextRead -= this.bufferLength;
@@ -219,12 +219,12 @@ class FreeQueue {
   }
 
   // Helper function for debugging; Prints currently available read and write.
-  /*printAvailableReadAndWrite() {
+  printAvailableReadAndWrite() {
     const currentRead = Atomics.load(this.states, this.States.READ);
     const currentWrite = Atomics.load(this.states, this.States.WRITE);
     console.log(this, {
       availableRead: this._getAvailableRead(currentRead, currentWrite),
       availableWrite: this._getAvailableWrite(currentRead, currentWrite),
     });
-  }*/
+  }
 }

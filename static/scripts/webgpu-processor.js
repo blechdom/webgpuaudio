@@ -1,5 +1,5 @@
 import { FreeQueue } from './free-queue-webgpu.js';
-import {FRAME_SIZE, RENDER_QUANTUM} from "./constants.js";
+import { FRAME_SIZE, RENDER_QUANTUM } from "./constants.js";
 
 const ExpectedPrimingCount = FRAME_SIZE / RENDER_QUANTUM;
 
@@ -39,7 +39,7 @@ class WebGpuProcessor extends AudioWorkletProcessor {
       // Pull processed audio data out of `outputQueue` and pass it in output.
       const didPull = this.outputQueue.pull(output, RENDER_QUANTUM);
       if (!didPull) {
-        console.log('[basic-processor.js] Not enough data in outputQueue');
+        console.log('[webgpu-processor.js] Not enough data in outputQueue');
       }
     } else {
       this.primingCounter++;
@@ -48,7 +48,7 @@ class WebGpuProcessor extends AudioWorkletProcessor {
     // Store incoming audio data `input` into `inputQueue`.
     const didPush = this.inputQueue.push(input, RENDER_QUANTUM);
     if (!didPush) {
-      console.log('[basic-processor.js] Not enough space in inputQueue');
+      console.log('[webgpu-processor.js] Not enough space in inputQueue');
     }
 
     // Notify worker.js if `inputQueue` has enough data to perform the batch

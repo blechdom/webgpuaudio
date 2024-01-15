@@ -17,13 +17,12 @@ export default function WorkletWorkerWebGpu() {
     }
   }, []);
 
-  const onChange = useCallback((val, viewUpdate) => {
-    console.log('val:', val);
+  const onChange = useCallback((val) => {
     setCode(val);
   }, []);
 
   const { workgroupSize } = useControls({
-    workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    workgroupSize: {options: workgroupSizes, value: workgroupSizes[2]},
     [playing ? "Stop Sound" : "Play Sound"]: button(() => {
       setPlaying(!playing)
     }),

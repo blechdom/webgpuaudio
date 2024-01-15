@@ -1,5 +1,6 @@
 import { FreeQueue } from "./free-queue.js";
 import { FRAME_SIZE, RENDER_QUANTUM } from "./constants.js";
+
 /**
  * A simple AudioWorkletProcessor node.
  *
