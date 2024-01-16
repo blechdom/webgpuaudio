@@ -72,7 +72,6 @@ export default class WebGpuAudioProcessorEngine {
 
   public updateInputGain(gain: number) {
     if (this.inputGainNode && isFinite(gain)) {
-      console.log("gain ", gain);
       this.inputGainNode.gain.linearRampToValueAtTime(gain, 10)
     }
   }
