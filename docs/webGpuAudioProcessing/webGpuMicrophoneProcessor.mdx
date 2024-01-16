@@ -1,0 +1,15 @@
+---
+title: WebGPU Microphone Processing
+sidebar_position: 2
+---
+
+import BrowserOnly from "@docusaurus/BrowserOnly";
+import WebGpuMicrophoneProcessor from "../../src/components/WebGpuMicrophoneProcessor";
+
+export default function WebGpuMicrophoneProcessorDoc() {
+  return (
+    <BrowserOnly fallback={<div>Loading...</div>}>
+      {() => <WebGpuMicrophoneProcessor />}
+    </BrowserOnly>
+  )
+}

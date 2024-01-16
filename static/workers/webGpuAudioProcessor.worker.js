@@ -71,7 +71,7 @@ async function initWebGpu() {
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
   });
   audioParamBuffer = device.createBuffer({
-    size: Float32Array.BYTES_PER_ELEMENT * 2,
+    size: Float32Array.BYTES_PER_ELEMENT * 3,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
   });
   let audioShaderModule = device.createShaderModule({code});
@@ -97,7 +97,6 @@ async function initWebGpu() {
 }
 
 async function processByGpu(inputBufferToProcess) {
-  console.log("nextChunkOffset", nextChunkOffset);
   device.queue.writeBuffer(timeInfoBuffer, 0, new Float32Array([nextChunkOffset, sampleRate]));
   device.queue.writeBuffer(gpuInputBuffer, 0, new Float32Array(inputBufferToProcess));
 

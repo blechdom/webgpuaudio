@@ -51,7 +51,7 @@ export default function WorkletWorkerWebGpu() {
 
   useEffect(() => {
     if (playing) setPlaying(false);
-  }, [workgroupSize])
+  }, [workgroupSize, code])
 
   return (
     <>

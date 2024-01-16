@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import inputAmplitudeModulatorShader from '!!raw-loader!../shaders/inputAmplitudeModulator.wgsl';
+import inputAmplitudeModulatorShader from '!!raw-loader!../shaders/stereoTremolo.wgsl';
 import CodeMirror from '@uiw/react-codemirror';
 import {wgsl} from "@iizukak/codemirror-lang-wgsl";
 import {Leva, useControls, button} from 'leva';
-import WebGpuAudioProcessorEngine from '../utils/WebGpuAudioProcessorEngine';
+import WebGpuMicrophoneProcessorEngine from '../utils/WebGpuMicrophoneProcessorEngine';
 
-export default function WebGpuAmplitudeModulation() {
+export default function WebGpuMicrophoneProcessor() {
   const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
   const [playing, setPlaying] = useState(false);
   const [code, setCode] = useState(inputAmplitudeModulatorShader);
@@ -23,8 +23,13 @@ export default function WebGpuAmplitudeModulation() {
     setCode(val);
   }, []);
 
-  const { volume, workgroupSize, inputType } = useControls({
-    inputType: {options: ["oscillator", "microphone"], value: "microphone"},
+  const { inputGain, volume, workgroupSize } = useControls({
+    inputGain: {
+      value: 1,
+      min: 0.0,
+      max: 10.0,
+      step: 0.01
+    },
     modulatorFreq: {
       value: 26.165,
       min: 0,
@@ -34,7 +39,7 @@ export default function WebGpuAmplitudeModulation() {
         const minIn = 0;
         const maxIn = 100;
         const minOut = Math.log(0.25);
-        const maxOut = Math.log(50);
+        const maxOut = Math.log(100);
         const scale = (maxOut - minOut) / (maxIn - minIn);
         setLastFreq(freq);
         setFreq(Math.exp(minOut + scale * (v - minIn)));
@@ -63,7 +68,7 @@ export default function WebGpuAmplitudeModulation() {
 
   async function startMakingSound() {
     if (engine === undefined) {
-      setEngine(new WebGpuAudioProcessorEngine(code.toString(), workgroupSize, inputType));
+      setEngine(new WebGpuMicrophoneProcessorEngine(code.toString(), workgroupSize));
     }
   }
 
@@ -76,19 +81,19 @@ export default function WebGpuAmplitudeModulation() {
 
   useEffect(() => {
     if (playing) setPlaying(false);
-  }, [workgroupSize, inputType]);
-
-  useEffect(() => {
-    if (engine && engine.updateInputType) {
-      engine.updateInputType(inputType);
-    }
-  }, [inputType]);
+  }, [workgroupSize, code]);
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
       engine.updateAudioParams(lastFreq, freq, volume);
     }
   }, [engine, freq, volume]);
+
+  useEffect(() => {
+    if (engine && engine.updateInputGain) {
+      engine.updateInputGain(parseFloat(inputGain));
+    }
+  }, [inputGain]);
 
   return (
     <>

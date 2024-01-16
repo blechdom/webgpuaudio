@@ -26,5 +26,5 @@ fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
   var modulator: f32 = am * 0.5 + 0.5;
   var modulated: f32 = input[sampleCount] * am;
 
-  output[sampleCount] = modulated * 0.1 * audio_param.gain;
+  output[sampleCount] = modulated * audio_param.gain;
 }

@@ -10,11 +10,14 @@ export default class WebGpuAudioProcessorEngine {
   public webGpuAudioProcessorWorker: Worker | undefined;
   public code: string;
   public workgroupSize: number;
+  public inputType: string;
+  public inputNode: AudioNode | undefined;
 
-  constructor(code: string, workgroupSize: number) {
+  constructor(code: string, workgroupSize: number, inputType: string) {
     this.webGpuAudioProcessorWorker = new GPUWorker({type: "module"});
     this.code = code;
     this.workgroupSize = workgroupSize;
+    this.inputType = inputType;
     this.init();
   }
 
@@ -25,7 +28,6 @@ export default class WebGpuAudioProcessorEngine {
 
     this.audioContext = new AudioContext();
     await this.audioContext.audioWorklet.addModule('/scripts/webgpu-processor.js');
-    const oscillator = new OscillatorNode(this.audioContext);
     const queueData = {
       inputQueue: this.inputQueue,
       outputQueue: this.outputQueue,
@@ -33,8 +35,14 @@ export default class WebGpuAudioProcessorEngine {
     }
     const processorNode =
       await new AudioWorkletNode(this.audioContext, 'webgpu-processor', {processorOptions: queueData});
-    oscillator.connect(processorNode).connect(this.audioContext.destination);
+
+    //this.updateInputType(this.inputType);
+    const oscillator = new OscillatorNode(this.audioContext);
     oscillator.start();
+    this.inputNode = oscillator;
+    //this.inputNode.connect(this.audioContext.destination);
+    console.log("this.inputNode", this.inputNode);
+    this.inputNode.connect(processorNode).connect(this.audioContext.destination);
 
     this.webGpuAudioProcessorWorker.postMessage({
       type: 'init',
@@ -46,12 +54,30 @@ export default class WebGpuAudioProcessorEngine {
     });
   }
 
-  public updateAudioParams(freq: number, volume: number) {
+  public async updateInputType(inputType: string) {
+    this.inputNode.disconnect();
+    this.inputType = inputType;
+    if (inputType === 'oscillator') {
+      const oscillator = new OscillatorNode(this.audioContext);
+      oscillator.start();
+      this.inputNode = oscillator;
+      this.inputNode.connect(this.audioContext.destination);
+    } else {
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true});
+      const mediaStreamSource = this.audioContext.createMediaStreamSource(mediaStream);
+      const channelSplitter = this.audioContext.createChannelSplitter(1);
+      mediaStreamSource.connect(channelSplitter);
+      this.inputNode = channelSplitter;
+      this.inputNode.connect(this.audioContext.destination);
+    }
+  }
+
+  public updateAudioParams(lastFreq: number, freq: number, volume: number) {
     this.webGpuAudioProcessorWorker.postMessage({
       type: 'updateAudioParams',
-      data: new Float32Array([freq, volume])
+      data: new Float32Array([lastFreq, freq, volume])
     });
-    //this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, waveFormNum]));
   }
 
   public async stop() {
