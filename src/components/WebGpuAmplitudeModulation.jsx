@@ -23,8 +23,7 @@ export default function WebGpuAmplitudeModulation() {
     setCode(val);
   }, []);
 
-  const { volume, workgroupSize, inputType } = useControls({
-    inputType: {options: ["oscillator", "microphone"], value: "microphone"},
+  const { volume, workgroupSize } = useControls({
     modulatorFreq: {
       value: 26.165,
       min: 0,
@@ -63,7 +62,7 @@ export default function WebGpuAmplitudeModulation() {
 
   async function startMakingSound() {
     if (engine === undefined) {
-      setEngine(new WebGpuAudioProcessorEngine(code.toString(), workgroupSize, inputType));
+      setEngine(new WebGpuAudioProcessorEngine(code.toString(), workgroupSize));
     }
   }
 
@@ -76,13 +75,7 @@ export default function WebGpuAmplitudeModulation() {
 
   useEffect(() => {
     if (playing) setPlaying(false);
-  }, [workgroupSize, inputType]);
-
-  useEffect(() => {
-    if (engine && engine.updateInputType) {
-      engine.updateInputType(inputType);
-    }
-  }, [inputType]);
+  }, [workgroupSize, code]);
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
@@ -94,7 +87,6 @@ export default function WebGpuAmplitudeModulation() {
     <>
       <ul>
         <li>An Amplitude Modulated Sine Wave is heard after passing through a WebWorker, an AudioWorklet, and WebGPU.</li>
-        <li>Change the Input Type to 'Microphone' to modulate your voice.</li>
         <li>Check out what GPU you are running on the home page <a href={"https://www.webgpusound.com"}>webgpusound.com</a></li>
         <li>TODO: debug the zippering glitches that occur when resizing the window.</li>
         <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>

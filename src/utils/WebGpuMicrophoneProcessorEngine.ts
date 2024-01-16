@@ -51,6 +51,7 @@ export default class WebGpuAudioProcessorEngine {
       this.processorNode.connect(channelMerger, 0, 0);
       this.processorNode.connect(channelMerger, 0, 1);
       channelMerger.connect(this.audioContext.destination);
+
       this.webGpuAudioProcessorWorker.postMessage({
         type: 'init',
         data: {

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import inputAmplitudeModulatorShader from '!!raw-loader!../shaders/stereoTremolo.wgsl';
+import inputAmplitudeModulatorShader from '!!raw-loader!../shaders/inputTremolo.wgsl';
 import CodeMirror from '@uiw/react-codemirror';
 import {wgsl} from "@iizukak/codemirror-lang-wgsl";
 import {Leva, useControls, button} from 'leva';
@@ -98,8 +98,7 @@ export default function WebGpuMicrophoneProcessor() {
   return (
     <>
       <ul>
-        <li>An Amplitude Modulated Sine Wave is heard after passing through a WebWorker, an AudioWorklet, and WebGPU.</li>
-        <li>Change the Input Type to 'Microphone' to modulate your voice.</li>
+        <li>The modulated microphone input is heard after passing through a WebWorker, an AudioWorklet, and WebGPU.</li>
         <li>Check out what GPU you are running on the home page <a href={"https://www.webgpusound.com"}>webgpusound.com</a></li>
         <li>TODO: debug the zippering glitches that occur when resizing the window.</li>
         <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
