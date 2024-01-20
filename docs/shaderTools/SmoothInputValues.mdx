@@ -1,0 +1,63 @@
+---
+title: Smooth Input Values
+sidebar_position: 1
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, string, useControls } from 'leva'
+import ShaderToolsEngine from '../../src/utils/ShaderToolsEngine.ts';
+import smoothControlInputsShader from '!!raw-loader!../../src/shaders/smoothControlInputs.wgsl';
+
+export default function SmoothInputValues() {
+  const bufferSize = 48;
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+  const [code, setCode] = React.useState(smoothControlInputsShader);
+  const [value, setValue] = useState(0.0);
+  const [lastValue, setLastValue] = useState(0.0);
+  const [outputData, setOutputData] = useState([]);
+
+  const onChange = useCallback((newCode) => {
+    setCode(newCode);
+  }, []);
+
+  const { workgroupSize } = useControls({
+    testValue: {
+      value: 0.0,
+      min: 0,
+      max: 100,
+      step: 0.0001,
+      onChange: (v) => {
+        setLastValue(value);
+        setValue(v);
+      },
+    },
+    string: {value: 'Last Value: ', label: lastValue.toFixed(3), editable: false},
+    string: {value: 'Current Value: ', label: value.toFixed(3), editable: false},
+    workgroupSize: {options: workgroupSizes, value: workgroupSizes[0]},
+  }, [value]);
+
+
+  useEffect(() => {
+    async function runShader() {
+      const shaderEngine = await new ShaderToolsEngine();
+      const shaderOutput = await shaderEngine.triggerGPU(code, workgroupSize, bufferSize, lastValue, value);
+      setOutputData(shaderOutput);
+    }
+    runShader();
+  }, [value, code, workgroupSize]);
+
+  return (
+    <>
+      <ul>
+        <li>Interpolate between two values smoothly in a compute shader.</li>
+      </ul>
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+      <div>
+        {Array.from(outputData.join(', '))}
+      </div>
+    </>
+  );
+}

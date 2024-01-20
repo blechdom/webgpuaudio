@@ -71,7 +71,7 @@ async function initWebGpu() {
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
   });
   audioParamBuffer = device.createBuffer({
-    size: Float32Array.BYTES_PER_ELEMENT * 3,
+    size: Float32Array.BYTES_PER_ELEMENT * 4,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
   });
   let audioShaderModule = device.createShaderModule({code});

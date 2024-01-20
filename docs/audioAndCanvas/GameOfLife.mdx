@@ -1,0 +1,158 @@
+---
+title: Audio and Canvas
+sidebar_position: 1
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, useControls, button, folder } from 'leva'
+import WebGpuAudioEngine from '../../src/utils/WebGpuAudioEngineOneShots.ts';
+import oneShotShader from '!!raw-loader!../../src/shaders/oneShot.wgsl';
+
+export default function WgslAudioOneShots() {
+  const soundTypes = ["guitar", "kick", "snare", "squelch"];
+  const shaders = ["oneShot"];
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+
+  const [playing, setPlaying] = useState(false);
+  const [engine, setEngine] = useState(undefined);
+  const [code, setCode] = React.useState(oneShotShader);
+  const [freq, setFreq] = useState(440);
+  const [wholeTime, setWholeTime] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      stopMakingSound();
+    }
+  }, []);
+
+  const onChange = useCallback((val, viewUpdate) => {
+    console.log('val:', val);
+    setCode(val);
+  }, []);
+
+  const { chunkDurationInSeconds, workgroupSize, loadShader, timestep, volume, soundType } = useControls({
+    soundType: {options: soundTypes},
+    frequency: {
+      value: 60,
+      min: 0,
+      max: 100,
+      step: 0.0001,
+      onChange: (v) => {
+        const minIn = 0;
+        const maxIn = 100;
+        const minOut = Math.log(40);
+        const maxOut = Math.log(3000);
+        const scale = (maxOut - minOut) / (maxIn - minIn);
+        setFreq(Math.exp(minOut + scale * (v - minIn)));
+      },
+    },
+    string: {value: 'Hz', label: freq.toFixed(3), editable: false},
+    volume: {
+      value: 0.15,
+      min: 0.0,
+      max: 1.0,
+      step: 0.01
+    },
+    timestep: {
+      value: 40,
+      min: 1,
+      max: 100,
+      step: 1,
+    },
+    WebGPUSettings: folder({
+      loadShader: {options: shaders},
+      chunkDurationInSeconds: {
+        value: 1.0,
+        min: 0.03,
+        max: 2.0,
+        step: 0.01
+      },
+      workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    }, {collapsed: true}),
+    [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
+  }, [playing, freq]);
+
+  useEffect(() => {
+    if (playing) {
+      startMakingSound();
+      let timerId;
+      const f = () => {
+        setWholeTime(x => x + 1)
+        timerId = requestAnimationFrame(f)
+      }
+      timerId = requestAnimationFrame(f)
+      return () => cancelAnimationFrame(timerId)
+    } else {
+      stopMakingSound();
+    }
+  }, [playing]);
+
+  useEffect(() => {
+    if((wholeTime % timestep) === 0) {
+      if (engine) engine.playSound(freq, volume, soundTypes.indexOf(soundType));
+    }
+  }, [engine, wholeTime, timestep, freq, volume, soundType]);
+
+  async function startMakingSound() {
+    if (engine === undefined) {
+      const engineInit = new WebGpuAudioEngine(chunkDurationInSeconds);
+      await engineInit.initGPU({
+        code,
+        entryPoint: 'synthesize',
+        workgroupSize,
+      });
+      setEngine(engineInit);
+    }
+  }
+
+  async function stopMakingSound() {
+    if (engine) {
+      await engine.stop();
+      setWholeTime(0);
+      setEngine(undefined);
+    }
+  }
+
+  useEffect(() => {
+    if(playing) setPlaying(false);
+  }, [chunkDurationInSeconds, workgroupSize, code])
+
+  useEffect(() => {
+    console.log("shader", loadShader);
+    switch(loadShader) {
+      case "oneShot":
+        setCode(oneShotShader);
+        break;
+
+      default:
+        setCode(oneShotShader);
+    }
+  }, [loadShader]);
+
+  useEffect(() => {
+    if (engine && engine.updateAudioParams) {
+      engine.updateAudioParams(freq, volume, soundTypes.indexOf(soundType));
+    }
+  }, [engine, freq, volume, soundType]);
+
+  return (
+    <>
+      <ul>
+        <li>Audio Synthesis uses rough streaming architecture to get chunks out of WebGPU and send control buffers to
+          control a WebGPU compute shader.
+        </li>
+        <li>Select different shaders in the Leva control panel to hear different sounds.</li>
+        <li>When changing WebGPU Parameters, the sound will stop and will need to be restarted.</li>
+        <li>Changing sound parameters will happen at the rate of the chunk duration, so if you change the frequency, it
+          will take a chunk duration to hear the change.
+        </li>
+        <li>Fully refresh the page if things get strange.</li>
+        <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
+      </ul>
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+    </>
+  );
+}

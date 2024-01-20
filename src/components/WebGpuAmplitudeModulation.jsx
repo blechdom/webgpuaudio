@@ -12,6 +12,8 @@ export default function WebGpuAmplitudeModulation() {
   const [engine, setEngine] = useState(undefined);
   const [freq, setFreq] = useState(1.0);
   const [lastFreq, setLastFreq] = useState(1.0);
+  const [gain, setGain] = useState(0.0);
+  const [lastGain, setLastGain] = useState(0.0);
 
   useEffect(() => {
     return () => {
@@ -23,7 +25,7 @@ export default function WebGpuAmplitudeModulation() {
     setCode(val);
   }, []);
 
-  const { volume, workgroupSize } = useControls({
+  const { workgroupSize } = useControls({
     modulatorFreq: {
       value: 26.165,
       min: 0,
@@ -44,13 +46,17 @@ export default function WebGpuAmplitudeModulation() {
       value: 0,
       min: 0.0,
       max: 1.0,
-      step: 0.01
+      step: 0.01,
+      onChange: (v) => {
+        setLastGain(gain);
+        setGain(v);
+      }
     },
     workgroupSize: {options: workgroupSizes, value: workgroupSizes[2]},
     [playing ? "Stop Sound" : "Play Sound"]: button(() => {
       setPlaying(!playing)
     }),
-  }, [playing, freq]);
+  }, [playing, freq, gain]);
 
   useEffect(() => {
     if (playing) {
@@ -79,9 +85,10 @@ export default function WebGpuAmplitudeModulation() {
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
-      engine.updateAudioParams(lastFreq, freq, volume);
+      console.log("lastFreq", lastFreq, "freq", freq, "lastGain", lastGain, "gain", gain);
+      engine.updateAudioParams(lastFreq, freq, lastGain, gain);
     }
-  }, [engine, freq, volume]);
+  }, [engine, freq, gain]);
 
   return (
     <>

@@ -52,10 +52,10 @@ export default class WebGpuAudioProcessorEngine {
     });
   }
 
-  public updateAudioParams(lastFreq: number, freq: number, volume: number) {
+  public updateAudioParams(lastFreq: number, freq: number, lastGain: number, gain: number) {
     this.webGpuAudioProcessorWorker.postMessage({
       type: 'updateAudioParams',
-      data: new Float32Array([lastFreq, freq, volume])
+      data: new Float32Array([lastFreq, freq, lastGain, gain])
     });
   }
 
