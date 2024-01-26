@@ -61,6 +61,7 @@ export default function WgslAudioNoInput() {
         code,
         entryPoint: 'synthesize',
         workgroupSize,
+        numParams: 0
       });
       setEngine(engineInit);
     }

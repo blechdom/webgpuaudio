@@ -1,6 +1,6 @@
 ---
 title: WGSL Audio Editor, One-Shots
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -28,7 +28,6 @@ export default function WgslAudioOneShots() {
   }, []);
 
   const onChange = useCallback((val, viewUpdate) => {
-    console.log('val:', val);
     setCode(val);
   }, []);
 
@@ -102,6 +101,7 @@ export default function WgslAudioOneShots() {
         code,
         entryPoint: 'synthesize',
         workgroupSize,
+        numParams: 3
       });
       setEngine(engineInit);
     }
@@ -125,7 +125,6 @@ export default function WgslAudioOneShots() {
       case "oneShot":
         setCode(oneShotShader);
         break;
-
       default:
         setCode(oneShotShader);
     }
@@ -133,7 +132,7 @@ export default function WgslAudioOneShots() {
 
   useEffect(() => {
     if (engine && engine.updateAudioParams) {
-      engine.updateAudioParams(freq, volume, soundTypes.indexOf(soundType));
+      engine.updateAudioParams([freq, volume, soundTypes.indexOf(soundType)]);
     }
   }, [engine, freq, volume, soundType]);
 

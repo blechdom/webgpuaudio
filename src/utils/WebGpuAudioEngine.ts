@@ -30,7 +30,7 @@ export default class WebGpuAudioEngine {
     this.chunkBufferSize = this.chunkNumSamples * Float32Array.BYTES_PER_ELEMENT;
   }
 
-  public async initGPU({code, entryPoint, workgroupSize}) {
+  public async initGPU({code, entryPoint, workgroupSize, numParams}) {
     this.workgroupSize = workgroupSize;
     const adapter = await navigator.gpu.requestAdapter();
     this.device = await adapter.requestDevice();
@@ -47,7 +47,7 @@ export default class WebGpuAudioEngine {
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     this.audioParamBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT * 3,
+      size: Float32Array.BYTES_PER_ELEMENT * numParams,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
     this.audioShaderModule = this.device.createShaderModule({code});
@@ -142,8 +142,8 @@ export default class WebGpuAudioEngine {
 
   }
 
-  public updateAudioParams(freq: number, volume: number, waveFormNum: number) {
-    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume, waveFormNum]));
+  public updateAudioParams(params: number[]) {
+    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array(params));
   }
 
   public async stop() {
