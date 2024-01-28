@@ -1,0 +1,119 @@
+---
+title: Oscillator
+sidebar_position: 5
+---
+
+import React, { useEffect, useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { Leva, useControls, button, folder } from 'leva'
+import OscillatorEngine from '../../src/utils/OscillatorEngine.ts';
+import oscillatorShader from '!!raw-loader!../../src/shaders/oscillator.wgsl';
+
+export default function Oscillator() {
+  const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+  const [playing, setPlaying] = useState(false);
+  const [engine, setEngine] = useState();
+  const [code, setCode] = React.useState(oscillatorShader);
+  const [freq, setFreq] = useState(440);
+
+  useEffect(() => {
+    return () => {
+      stopMakingSound();
+    }
+  }, []);
+
+  const onChange = useCallback((val, viewUpdate) => {
+    setCode(val);
+  }, []);
+
+  const { volume, chunkDurationInSeconds, workgroupSize } = useControls({
+    frequency: {
+      value: 60,
+      min: 0,
+      max: 100,
+      step: 0.0001,
+      onChange: (v) => {
+        const minIn = 0;
+        const maxIn = 100;
+        const minOut = Math.log(40);
+        const maxOut = Math.log(3000);
+        const scale = (maxOut - minOut) / (maxIn - minIn);
+        setFreq(Math.exp(minOut + scale * (v - minIn)));
+      },
+    },
+    string: {value: 'Hz', label: freq.toFixed(3), editable: false},
+    volume: {
+      value: 0.15,
+      min: 0.0,
+      max: 1.0,
+      step: 0.01
+    },
+    chunkDurationInSeconds: {
+      value: 0.1,
+      min: 0.03,
+      max: 1.0,
+      step: 0.01
+    },
+    workgroupSize: {options: workgroupSizes, value: workgroupSizes[8]},
+    [playing ? "Stop Sound" : "Play Sound"]: button(() => { setPlaying(!playing) }),
+  }, [playing, freq]);
+
+  useEffect(() => {
+    if (playing) {
+      startMakingSound();
+    } else {
+      stopMakingSound();
+    }
+  }, [playing]);
+
+  async function startMakingSound() {
+    if (engine === undefined) {
+      const engineInit = new OscillatorEngine(chunkDurationInSeconds);
+      await engineInit.initGPU({
+        code,
+        entryPoint: 'synthesize',
+        workgroupSize,
+      });
+      setEngine(engineInit);
+    }
+  }
+
+  async function stopMakingSound() {
+    if (engine) {
+      await engine.stop();
+      setEngine(undefined);
+    }
+  }
+
+  useEffect(() => {
+    console.log("chunkDurationInSeconds", chunkDurationInSeconds);
+    if(playing) setPlaying(false);
+  }, [chunkDurationInSeconds, workgroupSize, code])
+
+  useEffect(() => {
+    if (engine) engine.playSound();
+  }, [engine])
+
+  useEffect(() => {
+    if (engine && engine.updateAudioParams) {
+      engine.updateAudioParams(freq, volume);
+    }
+  }, [engine, freq, volume]);
+
+
+  return (
+    <>
+      <ul>
+        <li>Oscillator uses rough streaming architecture to get chunks out of WebGPU and send control buffers to
+          control a WebGPU compute shader.</li>
+        <li>When changing WebGPU Parameters or editing code, the sound will stop and will need to be restarted.</li>
+        <li>Fully refresh the page if things get strange.</li>
+        <li>The code below in the live wgsl editor creates the audio data in the WebGPU compute shader.</li>
+      </ul>
+
+      <Leva flat oneLineLabels/>
+      <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
+    </>
+  );
+}

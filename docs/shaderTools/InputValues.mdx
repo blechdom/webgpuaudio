@@ -6,14 +6,15 @@ sidebar_position: 1
 import React, { useEffect, useState, useCallback } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { wgsl } from "@iizukak/codemirror-lang-wgsl";
-import { Leva, string, useControls } from 'leva'
+import { Leva, useControls, folder, String } from 'leva'
 import ShaderToolsEngine from '../../src/utils/ShaderToolsEngine.ts';
 import smoothControlInputsShader from '!!raw-loader!../../src/shaders/smoothControlInputs.wgsl';
+import interpolateParamShader from '!!raw-loader!../../src/shaders/interpolateParam.wgsl';
 
 export default function SmoothInputValues() {
-  const bufferSize = 48;
   const workgroupSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256];
-  const [code, setCode] = React.useState(smoothControlInputsShader);
+  const shaders = ["interpolateParam", "smoothInput"];
+  const [code, setCode] = React.useState(interpolateParamShader);
   const [value, setValue] = useState(0.0);
   const [lastValue, setLastValue] = useState(0.0);
   const [outputData, setOutputData] = useState([]);
@@ -22,27 +23,47 @@ export default function SmoothInputValues() {
     setCode(newCode);
   }, []);
 
-  const { workgroupSize } = useControls({
-    testValue: {
+  const { workgroupSize, bufferSize, loadShader, currentValue } = useControls({
+    currentValue: {
       value: 0.0,
       min: 0,
       max: 100,
-      step: 0.0001,
-      onChange: (v) => {
-        setLastValue(value);
-        setValue(v);
-      },
+      step: 0.0001
     },
-    string: {value: 'Last Value: ', label: lastValue.toFixed(3), editable: false},
-    string: {value: 'Current Value: ', label: value.toFixed(3), editable: false},
+    bufferSize: {
+      value: 48,
+      min: 1,
+      max: 1024,
+      step: 1,
+    },
+    loadShader: {options: shaders},
     workgroupSize: {options: workgroupSizes, value: workgroupSizes[0]},
-  }, [value]);
+  }, []);
+
+  useEffect(() => {
+    setLastValue(value);
+    setValue(currentValue);
+  }, [currentValue]);
+
+  useEffect(() => {
+    console.log("shader", loadShader);
+    switch (loadShader) {
+      case "smoothInput":
+        setCode(smoothControlInputsShader);
+        break;
+      case "interpolateParam":
+        setCode(interpolateParamShader);
+        break;
+      default:
+        setCode(interpolateParamSadr);
+    }
+  }, [loadShader]);
 
 
   useEffect(() => {
     async function runShader() {
       const shaderEngine = await new ShaderToolsEngine();
-      const shaderOutput = await shaderEngine.triggerGPU(code, workgroupSize, bufferSize, lastValue, value);
+      const shaderOutput = await shaderEngine.triggerGPU(code, workgroupSize, bufferSize, [lastValue, value]);
       setOutputData(shaderOutput);
     }
     runShader();
@@ -56,6 +77,9 @@ export default function SmoothInputValues() {
       <Leva flat oneLineLabels/>
       <CodeMirror value={code} width="90%" height="400px" extensions={[wgsl()]} onChange={onChange} />
       <div>
+        <h3>Workgroup Size: {workgroupSize}    Buffer Size: {bufferSize}</h3>
+        <h3>Last Value: {lastValue.toFixed(3)}   Current Value: {value.toFixed(3)}</h3>
+        <br/>
         {Array.from(outputData.join(', '))}
       </div>
     </>

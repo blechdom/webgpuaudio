@@ -5,7 +5,7 @@ export default class ShaderToolsEngine {
     //this.shaderOutput = new Float32Array(outputBufferSize);
   }
 
-  public async triggerGPU(code, workgroupSize, outputBufferSize, lastValue, value) {
+  public async triggerGPU(code, workgroupSize, outputBufferSize, params) {
     const bufferSize = outputBufferSize * Float32Array.BYTES_PER_ELEMENT;
     const adapter = await navigator.gpu.requestAdapter();
     const device = await adapter.requestDevice();
@@ -21,10 +21,10 @@ export default class ShaderToolsEngine {
     device.queue.writeBuffer(outputBuffer, 0, new Float32Array(outputBufferSize));
 
     const paramBuffer = device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT * 2,
+      size: Float32Array.BYTES_PER_ELEMENT * params.length,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
-    device.queue.writeBuffer(paramBuffer, 0, new Float32Array([lastValue, value]));
+    device.queue.writeBuffer(paramBuffer, 0, new Float32Array(params));
 
     const shaderModule = await device.createShaderModule({code});
     const pipeline = await device.createComputePipeline({
