@@ -36,20 +36,16 @@ export default class WebGpuAudioEngine {
     this.chunkBufferSize = this.chunkNumSamples * Float32Array.BYTES_PER_ELEMENT;
   }
 
-  public async initGPU({code, entryPoint, workgroupSize}) {
+  public async initGPU({code, entryPoint, workgroupSize, freq, volume}) {
     this.workgroupSize = workgroupSize;
     const adapter = await navigator.gpu.requestAdapter();
     this.device = await adapter.requestDevice();
-   /* this.timeInfoBuffer = this.device.createBuffer({
-      size: Float32Array.BYTES_PER_ELEMENT,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    });*/
     this.logBuffer = this.device.createBuffer({
-      size: this.chunkBufferSize,
+      size: this.chunkNumSamplesPerChannel * Float32Array.BYTES_PER_ELEMENT,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
     this.logMapBuffer = this.device.createBuffer({
-      size: this.chunkBufferSize,
+      size: this.chunkNumSamplesPerChannel * Float32Array.BYTES_PER_ELEMENT,
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     this.chunkBuffer = this.device.createBuffer({
@@ -93,10 +89,12 @@ export default class WebGpuAudioEngine {
         {binding: 3, resource: {buffer: this.logBuffer}},
       ]
     });
+    this.audioParams = [freq, volume];
     console.log("this.audioParams", this.audioParams);
-    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array(this.audioParams));
+    this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume]));
+    this.lastAudioParams = new Float32Array([0, freq, volume]);
     console.log("this.lastAudioParams", this.lastAudioParams);
-    this.device.queue.writeBuffer(this.lastAudioParamBuffer, 0, this.lastAudioParams);
+    this.device.queue.writeBuffer(this.lastAudioParamBuffer, 0, new Float32Array([0, freq, volume]));
 
   }
 
@@ -136,13 +134,13 @@ export default class WebGpuAudioEngine {
 
     commandEncoder.copyBufferToBuffer(this.chunkBuffer, 0, this.chunkMapBuffer, 0, this.chunkBufferSize);
     commandEncoder.copyBufferToBuffer(this.lastAudioParamBuffer, 0, this.lastAudioParamMapBuffer, 0, Float32Array.BYTES_PER_ELEMENT * 3);
-    commandEncoder.copyBufferToBuffer(this.logBuffer, 0, this.logMapBuffer, 0, this.chunkBufferSize);
+    commandEncoder.copyBufferToBuffer(this.logBuffer, 0, this.logMapBuffer, 0, this.chunkNumSamplesPerChannel * Float32Array.BYTES_PER_ELEMENT);
 
     this.device.queue.submit([commandEncoder.finish()]);
 
     await this.chunkMapBuffer.mapAsync(GPUMapMode.READ, 0, this.chunkBufferSize);
     await this.lastAudioParamMapBuffer.mapAsync(GPUMapMode.READ, 0, Float32Array.BYTES_PER_ELEMENT * 3);
-    await this.logMapBuffer.mapAsync(GPUMapMode.READ, 0, this.chunkBufferSize);
+    await this.logMapBuffer.mapAsync(GPUMapMode.READ, 0, this.chunkNumSamplesPerChannel * Float32Array.BYTES_PER_ELEMENT);
 
     const chunkData = new Float32Array(this.chunkNumSamples);
     chunkData.set(new Float32Array(this.chunkMapBuffer.getMappedRange()));
@@ -154,7 +152,7 @@ export default class WebGpuAudioEngine {
     this.lastAudioParams = lastAudioParamData;
     this.lastAudioParamMapBuffer.unmap();
 
-    const logData = new Float32Array(this.chunkNumSamples);
+    const logData = new Float32Array(this.chunkNumSamplesPerChannel);
     logData.set(new Float32Array(this.logMapBuffer.getMappedRange()));
     console.log("logData", logData);
     this.logMapBuffer.unmap();

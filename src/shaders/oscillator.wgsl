@@ -16,7 +16,7 @@ struct AudioParams {
 @binding(0) @group(0) var<storage, read_write> sound_chunk: array<vec2<f32>>;
 @binding(1) @group(0) var<storage, read> audio_param: AudioParams;
 @binding(2) @group(0) var<storage, read_write> last_audio_param: LastAudioParams;
-@binding(3) @group(0) var<storage, read_write> log: array<vec2<f32>>;
+@binding(3) @group(0) var<storage, read_write> logBuffer: array<f32>;
 
 @compute
 @workgroup_size(WORKGROUP_SIZE)
@@ -27,11 +27,13 @@ fn synthesize(@builtin(global_invocation_id) global_id: vec3<u32>) {
         return;
     }
 
-    var freqRamp = mix(last_audio_param.frequency, audio_param.frequency, f32(sampleCount) / f32(arrayLength(&sound_chunk)));
+    var mixFade = f32(sampleCount) / f32(arrayLength(&sound_chunk) - 1); // from 0 to 1 for length of sound_chunk
 
-    log[sampleCount] = vec2(last_audio_param.offset);
+    var freqRamp = mix(last_audio_param.frequency, audio_param.frequency, mixFade); // from last freq to current freq depending on mixFade
 
-    var saw: f32 = ((f32(sampleCount) * (freqRamp / SAMPLE_RATE)) + last_audio_param.offset) % 1.0;
+    var saw: f32 = (f32(sampleCount) * (freqRamp / SAMPLE_RATE)) % 1.0;
+
+    logBuffer[sampleCount] = saw;
 
     var v: f32 = sin(saw * PI2);
 

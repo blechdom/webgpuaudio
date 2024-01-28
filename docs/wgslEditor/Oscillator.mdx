@@ -74,7 +74,10 @@ export default function Oscillator() {
         code,
         entryPoint: 'synthesize',
         workgroupSize,
+        freq,
+        volume
       });
+
       setEngine(engineInit);
     }
   }
