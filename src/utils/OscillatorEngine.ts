@@ -1,4 +1,4 @@
-const NUM_CHANNELS = 2;
+const NUM_CHANNELS = 1;
 const MAX_BUFFERED_CHUNKS = 1;
 
 export default class WebGpuAudioEngine {
@@ -19,10 +19,8 @@ export default class WebGpuAudioEngine {
   public lastAudioParamBuffer: GPUBuffer;
   public lastAudioParamMapBuffer: GPUBuffer;
   public lastAudioParams: Float32Array = new Float32Array([0.0, 0.0, 0.0]);
-  public freqPipeline: GPUComputePipeline;
-  public synthPipeline: GPUComputePipeline;
-  public freqBindGroup: GPUBindGroup;
-  public synthBindGroup: GPUBindGroup;
+  public pipeline: GPUComputePipeline;
+  public bindGroup: GPUBindGroup;
   public audioShaderModule: GPUShaderModule;
   public sampleRate: number;
   public timeoutId: NodeJS.Timeout | null = null;
@@ -33,7 +31,6 @@ export default class WebGpuAudioEngine {
   constructor(chunkDurationInSeconds: number) {
     this.audioContext = new AudioContext();
     this.sampleRate = this.audioContext.sampleRate;
-    console.log("sampleRate: ", this.sampleRate);
     this.chunkDurationInSeconds = chunkDurationInSeconds;
     this.chunkNumSamplesPerChannel = this.sampleRate * chunkDurationInSeconds;
     this.chunkNumSamples = NUM_CHANNELS * this.chunkNumSamplesPerChannel; // left and right channels
@@ -81,17 +78,7 @@ export default class WebGpuAudioEngine {
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     this.audioShaderModule = this.device.createShaderModule({code});
-    this.freqPipeline = this.device.createComputePipeline({
-      layout: 'auto',
-      compute: {
-        module: this.audioShaderModule,
-        entryPoint: "frequencyRamp",
-        constants: {
-          WORKGROUP_SIZE: workgroupSize
-        }
-      }
-    });
-    this.synthPipeline = this.device.createComputePipeline({
+    this.pipeline = this.device.createComputePipeline({
       layout: 'auto',
       compute: {
         module: this.audioShaderModule,
@@ -102,30 +89,18 @@ export default class WebGpuAudioEngine {
         }
       }
     });
-    this.freqBindGroup = this.device.createBindGroup({
-      layout: this.freqPipeline.getBindGroupLayout(0),
-      entries: [
-        {binding: 0, resource: {buffer: this.chunkBuffer}},
-        {binding: 1, resource: {buffer: this.audioParamBuffer}},
-        {binding: 2, resource: {buffer: this.lastAudioParamBuffer}},
-        {binding: 4, resource: {buffer: this.freqBuffer}},
-      ]
-    });
-    this.synthBindGroup = this.device.createBindGroup({
-      layout: this.synthPipeline.getBindGroupLayout(0),
+    this.bindGroup = this.device.createBindGroup({
+      layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         {binding: 0, resource: {buffer: this.chunkBuffer}},
         {binding: 1, resource: {buffer: this.audioParamBuffer}},
         {binding: 2, resource: {buffer: this.lastAudioParamBuffer}},
         {binding: 3, resource: {buffer: this.logBuffer}},
-        {binding: 4, resource: {buffer: this.freqBuffer}},
       ]
     });
     this.audioParams = [freq, volume];
-    console.log("this.audioParams", this.audioParams);
     this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array([freq, volume]));
     this.lastAudioParams = new Float32Array([0, freq, volume]);
-    console.log("this.lastAudioParams", this.lastAudioParams);
     this.device.queue.writeBuffer(this.lastAudioParamBuffer, 0, new Float32Array([0, freq, volume]));
 
   }
@@ -149,27 +124,17 @@ export default class WebGpuAudioEngine {
       this.timeoutId = setTimeout(await this.createSoundChunk.bind(this), timeout * 1000.0);
       return;
     }
-    console.log("this.audioParams", this.audioParams);
     this.device.queue.writeBuffer(this.audioParamBuffer, 0, new Float32Array(this.audioParams));
-    console.log("this.lastAudioParams", this.lastAudioParams);
     this.device.queue.writeBuffer(this.lastAudioParamBuffer, 0, this.lastAudioParams);
 
     const commandEncoder = this.device.createCommandEncoder();
     const freqPass = commandEncoder.beginComputePass();
-    freqPass.setPipeline(this.freqPipeline);
-    freqPass.setBindGroup(0, this.freqBindGroup);
+    freqPass.setPipeline(this.pipeline);
+    freqPass.setBindGroup(0, this.bindGroup);
     freqPass.dispatchWorkgroups(
       Math.ceil(this.chunkNumSamplesPerChannel / this.workgroupSize)
     );
     freqPass.end();
-
-    const synthPass = commandEncoder.beginComputePass();
-    synthPass.setPipeline(this.synthPipeline);
-    synthPass.setBindGroup(0, this.synthBindGroup);
-    synthPass.dispatchWorkgroups(
-      Math.ceil(this.chunkNumSamplesPerChannel / this.workgroupSize)
-    );
-    synthPass.end();
 
     commandEncoder.copyBufferToBuffer(this.chunkBuffer, 0, this.chunkMapBuffer, 0, this.chunkBufferSize);
     commandEncoder.copyBufferToBuffer(this.lastAudioParamBuffer, 0, this.lastAudioParamMapBuffer, 0, Float32Array.BYTES_PER_ELEMENT * 3);
@@ -192,7 +157,7 @@ export default class WebGpuAudioEngine {
 
     const logData = new Float32Array(this.chunkNumSamplesPerChannel);
     logData.set(new Float32Array(this.logMapBuffer.getMappedRange()));
-    console.log("logData", logData);
+    //console.log("logData", logData);
     this.logMapBuffer.unmap();
 
     const audioBuffer = this.audioContext.createBuffer(
@@ -214,7 +179,10 @@ export default class WebGpuAudioEngine {
 
     const audioSource = this.audioContext.createBufferSource();
     audioSource.buffer = audioBuffer;
-    audioSource.connect(this.audioContext.destination);
+    const channelMerger = this.audioContext.createChannelMerger(2);
+    audioSource.connect(channelMerger, 0, 0);
+    audioSource.connect(channelMerger, 0, 1);
+    channelMerger.connect(this.audioContext.destination);
 
     if (this.nextChunkOffset !== 0) audioSource.start(this.nextChunkOffset); // workaround to remove 2nd chunk glitch
 
