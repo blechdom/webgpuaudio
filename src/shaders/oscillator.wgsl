@@ -41,11 +41,11 @@ fn synthesize(@builtin(global_invocation_id) global_id: vec3<u32>) {
     var v: f32 = sin(saw * PI2);
 
     var gainRamp = mix(last_audio_param.gain, audio_param.gain, f32(sampleCount) / f32(arrayLength(&sound_chunk) - 1));
+    logBuffer[sampleCount] = gainRamp;
     sound_chunk[sampleCount] = v * gainRamp;
     last_audio_param.frequency = audio_param.frequency;
     last_audio_param.gain = audio_param.gain;
     if(sampleCount == arrayLength(&sound_chunk) - 1) {
-            last_audio_param.offset = saw;
+        last_audio_param.offset = saw;
     }
-    logBuffer[sampleCount] = saw;
 }
