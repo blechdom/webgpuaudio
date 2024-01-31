@@ -8,15 +8,17 @@ Live WGSL editor Examples:
   * WebGPU Samples
     * [Streaming Oscillators and Timers (no live inputs)](basicStreaming/WgslAudioNoInput.mdx)
     * [Streaming Oscillators and Controls (with live inputs)](basicStreaming/WgslAudioEditorWithInputs.mdx)
+    * [Oscillator with smoothing](basicStreaming/Oscillator.mdx)
     * [One-Shot Synths and Controls (not streaming)](basicStreaming/WgslAudioOneShots.mdx)
     * [Acid Synth](basicStreaming/AcidSynth.mdx)
     * [Inversion Machine (NOISE!)](basicStreaming/InversionMachine.mdx)
   * WebWorker WebGPU Samples
-    * [WebGPU Audio WebWorker](webWorkerPassthroughs/webGpuAudioWorker)
-    * [AudioWorklet WebWorker Passthrough](webWorkerPassthroughs/workletWorkerPassthrough)
-    * [WebGPU AudioWorklet WebWorker Passthrough](webWorkerPassthroughs/workletWorkerWebGpuPassthrough)
+    * [WebGPU Audio WebWorker](webWorkerPassthroughs/webGpuAudioWorker.mdx)
+    * [AudioWorklet WebWorker Passthrough](webWorkerPassthroughs/workletWorkerPassthrough.mdx)
+    * [WebGPU AudioWorklet WebWorker Passthrough](webWorkerPassthroughs/workletWorkerWebGpuPassthrough.mdx)
   * WebGPU Audio Processing
-    * [WebGPU Amplitude Modulation](audioProcessing/webGpuAmplitudeModulation)
+    * [WebGPU Amplitude Modulation](audioProcessing/amplitudeModulation.mdx)
+    * [WebGPU Microphone Processor](audioProcessing/microphoneProcessor.mdx)
 
 # Useful Links
 
