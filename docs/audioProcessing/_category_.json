@@ -1,5 +1,5 @@
 {
-  "label": "WebGPU Audio Processing",
+  "label": "Audio Processing in WebGPU",
   "position": 4,
   "link": {
     "type": "generated-index",

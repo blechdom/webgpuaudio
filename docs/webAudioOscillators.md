@@ -63,7 +63,7 @@ function WebAudioOscillators() {
   }, [volume, freq, waveForm, oscillator])
   
   return (
-    <Leva fill flat oneLineLabels />
+    <Leva flat oneLineLabels />
   )
 }
 ```

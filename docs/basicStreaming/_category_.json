@@ -1,5 +1,5 @@
 {
-  "label": "Audio Shaders: wgsl web editor",
+  "label": "Audio Shaders: basic streaming",
   "position": 2,
   "link": {
     "type": "generated-index",
