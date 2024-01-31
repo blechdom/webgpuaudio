@@ -1,41 +1,29 @@
-# Website
+# WebGPUSound.com 
+Experiments creating audio in WebGPU
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Lots of sort-of working / sort-of glitchy demonstrations of how to get audio in and out of the webGPU API in the browser.
 
-### Installation
+Advice welcome! 
 
-```
-$ yarn
-```
+Please contribute, fork, steal, improve, ruin, share!
 
-### Local Development
+## Local Dev
 
-```
-$ yarn start
-```
+* Clone the repo -> [https://github.com/blechdom/webgpuaudio](https://github.com/blechdom/webgpuaudio)
+* node version >= 18
+* install yarn
+* `$ yarn`
+* `$ yarn start`
+* goto browser: `localhost:3000`
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+## Hosting
 
-### Build
+* `SharedArrayBuffer` requires HTTPS and additional headers
 
-```
-$ yarn build
-```
+# Troubleshooting
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+* Check your browser flags for WebGPU are enabled.
+* Check your GPU on the [home page](https://www.webgpusound.com/)
+* The `Play Sound` button should be at the bottom of the control panel. Refresh the page if this is not the case.
+* Hard refresh is your friend, if the interface is out of order or the sound is more glitchy than usual.
+* If you do not see the `Play Sound` button scroll down inside of the control panel.

@@ -1,23 +1,24 @@
 ---
-title: WebGPU Audio Resources
-sidebar_position: 1
+title: Troubleshooting
+sidebar_position: 10
 ---
-# WebGPU Audio Resources
+# Troubleshooting
 
-Live WGSL editor Examples: 
-  * WebGPU Samples
-    * [Streaming Oscillators and Timers (no live inputs)](wgslEditor/WgslAudioNoInput.mdx)
-    * [Streaming Oscillators and Controls (with live inputs)](wgslEditor/WgslAudioEditorWithInputs.mdx)
-    * [One-Shot Synths and Controls (not streaming)](wgslEditor/WgslAudioOneShots.mdx)
-    * [Acid Synth](wgslEditor/AcidSynth.mdx)
-    * [Inversion Machine (NOISE!)](wgslEditor/InversionMachine.mdx)
-  * WebWorker WebGPU Samples
-    * [WebGPU Audio WebWorker](./webWorker/webGpuAudioWorker)
+* Check your browser flags for WebGPU are enabled.
+* Check your GPU on the [home page](https://www.webgpusound.com/)
+* The `Play Sound` button should be at the bottom of the control panel. Refresh the page if this is not the case.
+* Hard refresh is your friend, if the interface is out of order or the sound is more glitchy than usual.
+* If you do not see the `Play Sound` button scroll down inside of the control panel.
 
-# Useful Links
+## Local Dev
 
-* [WebGPU Specification](https://www.w3.org/TR/webgpu/)
-* [Tour Of WGSL](https://google.github.io/tour-of-wgsl/)
-* [Gist of WebGPU Audio Code](https://gist.github.com/JolifantoBambla/0a4e9c2a0a8bc475f081bc6f9d1aa1a8)
-* [WebGPU Samples](https://webgpu.github.io/webgpu-samples/)
-* [Audio Worklet Design Pattern](https://developer.chrome.com/blog/audio-worklet-design-pattern)
+* Clone the repo -> [https://github.com/blechdom/webgpuaudio](https://github.com/blechdom/webgpuaudio)
+* node version >= 18
+* install yarn
+* `$ yarn`
+* `$ yarn start`
+* goto browser: `localhost:3000`
+
+## Hosting
+
+* `SharedArrayBuffer` requires HTTPS and additional headers

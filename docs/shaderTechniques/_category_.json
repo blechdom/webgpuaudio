@@ -1,8 +1,0 @@
-{
-  "label": "WebGPU Shader Techniques",
-  "position": 5,
-  "link": {
-    "type": "generated-index",
-    "description": "Isolating Shader Techniques for understanding and debugging"
-  }
-}
